@@ -65,7 +65,7 @@ function checkAnswer(selectedIndex, q) {
     result.innerHTML = `✅ 正解！<br>${q.explanation}<br>(${q.year})`;
     answeredQuestions.add(currentIndex);
   } else {
-    result.innerHTML = `❌ 不正解。もう一度選んでください。`;
+    result.innerHTML = `❌ 不正解<br>${q.explanation}<br>(${q.year})`;
   }
 }
 
