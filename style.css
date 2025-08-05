@@ -30,3 +30,20 @@ body {
   width: 48%;
   font-size: 16px;
 }
+.button-container {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  background: #f9f9f9; /* 背景色を同じにして自然に見せる */
+  padding: 10px 0;
+  border-top: 1px solid #ddd;
+}
+
+#reset-button,
+#next-button {
+  width: 120px;
+}
