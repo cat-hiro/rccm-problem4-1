@@ -14,7 +14,6 @@ function resetQuestions() {
   currentIndex = 0;
   showQuestion();
   document.getElementById("result").innerHTML = "";
-  document.getElementById("next-button").style.display = "none";
 }
 
 function shuffleArray(array) {
@@ -56,6 +55,8 @@ function showQuestion() {
     btn.onclick = () => checkAnswer(index, q);
     choicesContainer.appendChild(btn);
   });
+
+  document.getElementById("result").innerHTML = "";
 }
 
 function checkAnswer(selectedIndex, q) {
@@ -63,7 +64,6 @@ function checkAnswer(selectedIndex, q) {
   if (selectedIndex === q.answer) {
     result.innerHTML = `✅ 正解！<br>${q.explanation}<br>(${q.year})`;
     answeredQuestions.add(currentIndex);
-    document.getElementById("next-button").style.display = "inline-block";
   } else {
     result.innerHTML = `❌ 不正解。もう一度選んでください。`;
   }
@@ -72,8 +72,6 @@ function checkAnswer(selectedIndex, q) {
 document.getElementById("next-button").addEventListener("click", () => {
   currentIndex = (currentIndex + 1) % questions.length;
   showQuestion();
-  document.getElementById("result").innerHTML = "";
-  document.getElementById("next-button").style.display = "none";
 });
 
 document.getElementById("reset-button").addEventListener("click", resetQuestions);
