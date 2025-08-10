@@ -6,25 +6,18 @@
   <title>RCCM 問題4-1</title>
   <style>
     :root{
-      /* 明るい青×白 基調 */
-      --bg:#f0f7ff;          /* ごく薄い青 */
-      --panel:#ffffff;       /* 白カード */
-      --muted:#556073;       /* 補助テキスト */
-      --text:#0b1b2b;        /* 本文色（濃紺に近い） */
-      --accent:#0a74d1;      /* アクセント青 */
-      --ok:#138000;          /* 緑（合格） */
-      --bad:#c91919;         /* 赤（不正解） */
-      --border:#d7e1ef;      /* 罫線 */
-      --radius:16px;--shadow:0 10px 30px rgba(8,37,68,.08);
+      --bg:#f6f9ff; --panel:#ffffff; --muted:#4b5563; --text:#111827; --accent:#2563eb;
+      --ok:#16a34a; --bad:#dc2626; --border:#cbd5e1;
+      --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.12);
     }
     html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif}
     .wrapper{min-height:100%;display:flex;flex-direction:column}
 
     /* Header */
-    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+    header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
     .container{max-width:880px;margin:0 auto;padding:14px 16px}
-    .title{font-weight:800;text-align:center;letter-spacing:.02em;font-size:clamp(20px,4.5vw,28px);color:var(--text)}
+    .title{font-weight:800;text-align:center;letter-spacing:.02em;font-size:clamp(20px,4.5vw,28px);color:var(--accent)}
 
     /* Main */
     main{flex:1}
@@ -32,13 +25,22 @@
     .year-no{display:flex;gap:8px;color:var(--muted);font-size:.95rem;align-items:center;margin-bottom:8px}
     .question{font-size:clamp(16px,3.8vw,20px);line-height:1.7;margin:8px 0 12px}
     .imgwrap{display:flex;justify-content:center;margin:10px 0}
-    .imgwrap img{max-width:100%;height:auto;border-radius:12px;border:1px solid var(--border);background:#f6f9ff}
+    .imgwrap img{
+      max-width:100%;
+      max-height:68vh;
+      height:auto;
+      object-fit:contain;
+      display:block;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#f6f9ff;
+    }
 
     .choices{display:grid;gap:10px}
-    .choice{display:flex;align-items:flex-start;gap:10px;background:#f8fbff;border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:transform .1s ease, background .2s ease}
-    .choice:hover{transform:translateY(-1px);background:#f1f7ff}
-    .choice.disabled{opacity:.8;cursor:default;transform:none}
-    .bullet{min-width:26px;height:26px;display:inline-grid;place-items:center;border-radius:999px;border:1px solid #c7d6ea;color:#0a3a6b;font-weight:700;background:#fff}
+    .choice{display:flex;align-items:flex-start;gap:10px;background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:transform .1s ease}
+    .choice:hover{transform:translateY(-1px)}
+    .choice.disabled{opacity:.7;cursor:default;transform:none}
+    .bullet{min-width:24px;height:24px;display:inline-grid;place-items:center;border-radius:999px;border:1px solid #94a3b8;color:var(--accent);font-weight:700;background:white}
     .text{flex:1;text-align:left}
 
     .result{margin-top:12px;font-size:1rem}
@@ -50,10 +52,11 @@
     .bottombar{position:sticky;bottom:0;z-index:30;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border-top:1px solid var(--border)}
     .bar{max-width:880px;margin:0 auto;display:flex;gap:10px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
     .spacer{flex:1}
-    button{appearance:none;border:1px solid var(--border);border-radius:14px;padding:12px 16px;background:#eef5ff;color:var(--text);font-weight:700;cursor:pointer}
-    .btn-primary{background:linear-gradient(180deg,#0a74d1,#095ca6);border-color:#095ca6;color:#fff}
-    .btn-ghost{background:#fff}
+    button{appearance:none;border:1px solid var(--border);border-radius:14px;padding:12px 16px;background:#f8fafc;color:var(--text);font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:#2563eb;color:white}
+    .btn-ghost{background:transparent}
 
+    /* iPhone 大画面向けの読みやすさ */
     @media (min-width:430px){
       .container{padding:18px}
       .choice{padding:16px}
@@ -74,7 +77,7 @@
         <div id="card" class="card" hidden>
           <div class="year-no" id="meta"></div>
           <div class="question" id="q"></div>
-          <div class="imgwrap" id="imgwrap" hidden><img id="qimg" alt="問題図"/></div>
+          <div class="imgwrap" id="imgwrap" hidden><img id="qimg" alt=""/></div>
           <div class="choices" id="choices"></div>
           <div class="result" id="result"></div>
           <div class="explain" id="explain"></div>
@@ -91,7 +94,6 @@
       </div>
     </footer>
   </div>
-
   <!-- データチャンク（問題データ本体） -->
   <script src="problems_chunk1_of4.js"></script>
   <script src="problems_chunk2_of4.js"></script>
@@ -117,6 +119,17 @@
       const STORAGE_KEY = 'rccm_q_correct_ids_v1';
       const LETTERS = ['a','b','c','d','e','f'];
 
+      // 画像ソース正規化（空/不正は ''、data:image/*;base64, を png に丸める）
+      function sanitizeImageSrc(raw){
+        if(raw == null) return '';
+        const s = String(raw).trim();
+        if(!s || s === 'null' || s === 'undefined' || s === 'NaN') return '';
+        if(/^data:image\/[^;]+;base64,/.test(s)){
+          return s.replace(/^data:image\/[^;]+;base64,/, 'data:image/png;base64,');
+        }
+        return s; // URL/相対パスはそのまま
+      }
+
       function loadProblems(){
         let list = [];
         if(Array.isArray(window.PROBLEMS_CHUNKS)){
@@ -124,6 +137,7 @@
             if(Array.isArray(chunk)) list.push(...chunk);
           }
         }
+        // 正規化
         list = list.map(n=>({
           id: String(n.id ?? `${n.year}-${n.number}`),
           year: Number(n.year ?? 0),
@@ -158,20 +172,28 @@
         if(!q){
           qEl.textContent = '出題可能な問題がありません。リセットしてください。';
           metaEl.textContent = '';
-          imgWrap.hidden = true; imgEl.src = '';
+          imgWrap.hidden = true; imgEl.removeAttribute('src');
           choicesEl.innerHTML=''; resultEl.textContent=''; explainEl.textContent='';
           return;
         }
         metaEl.textContent = `${q.yearDisplay} / No.${q.number}`;
         qEl.textContent = q.question;
 
-        // 画像：空でなければ表示（Base64/URLのどちらでも可）
-        if(q.image && q.image.trim() !== ''){
-          imgEl.src = q.image; imgWrap.hidden = false;
+        // 画像処理（正規化＋確実な非表示制御）
+        const src = sanitizeImageSrc(q.image);
+        imgEl.onload = ()=>{ imgWrap.hidden = false; };
+        imgEl.onerror = ()=>{
+          imgEl.removeAttribute('src');
+          imgWrap.hidden = true; // 失敗時はブロックごと隠す
+        };
+        if(src){
+          imgEl.src = src;
         }else{
-          imgEl.src=''; imgWrap.hidden = true; // 画像がないときは要素ごと非表示（"問題図"は出さない）
+          imgEl.removeAttribute('src');
+          imgWrap.hidden = true;
         }
 
+        // 選択肢描画
         choicesEl.innerHTML=''; resultEl.textContent=''; resultEl.className='result'; explainEl.textContent='';
         q.choices.forEach((text,i)=>{
           const div = document.createElement('div');
@@ -184,7 +206,6 @@
           choicesEl.appendChild(div);
         });
       }
-
       function lockChoices(){
         choicesEl.querySelectorAll('.choice').forEach(el=>{
           el.classList.add('disabled');
@@ -199,20 +220,28 @@
         if(isCorrect){
           resultEl.textContent = '正解！';
           resultEl.className = 'result ok';
-          correctSet.add(current.id); saveCorrect();
+          correctSet.add(current.id);
+          saveCorrect();
         }else{
           const letter = (LETTERS[current.correct]||String(current.correct+1));
           resultEl.textContent = `不正解。正解は ${letter}`;
           resultEl.className = 'result bad';
         }
-        if(current.explanation){ explainEl.textContent = current.explanation; }
+        if(current.explanation){
+          explainEl.textContent = current.explanation;
+        }
       }
 
-      function nextQuestion(){ current = pickRandom(); render(current); }
+      function nextQuestion(){
+        current = pickRandom();
+        render(current);
+      }
 
       function resetProgress(){
         if(confirm('正解済みの記録をリセットしますか？')){
-          correctSet.clear(); saveCorrect(); nextQuestion();
+          correctSet.clear();
+          saveCorrect();
+          nextQuestion();
         }
       }
 
@@ -221,7 +250,7 @@
 
       function init(){
         if(!ALL || ALL.length===0){
-          loadingEl.textContent = 'データが未設定です。';
+          loadingEl.textContent = 'データが未設定です。問題データを読み込んでください。';
         }else{
           loadingEl.hidden = true; cardEl.hidden = false;
           nextQuestion();
