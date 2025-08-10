@@ -1,344 +1,223 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>RCCM 問題4-1</title>
-<style>
-  :root{
-    --bg:#f6f7fb;
-    --card:#ffffff;
-    --text:#1f2937;
-    --muted:#6b7280;
-    --brand:#2563eb;
-    --brand-weak:#e8f0ff;
-    --danger:#dc2626;
-    --ok:#16a34a;
-    --border:#e5e7eb;
-    --shadow:0 8px 24px rgba(0,0,0,.06);
-    --radius:14px;
-  }
-  html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Hiragino Kaku Gothic ProN','Yu Gothic UI','Yu Gothic','Meiryo',sans-serif;
-    -webkit-font-smoothing:antialiased; line-height:1.65;
-  }
-  header{
-    position:sticky; top:0; z-index:10;
-    background:var(--bg); backdrop-filter:saturate(1.2) blur(6px);
-  }
-  .wrap{max-width:980px; margin:0 auto; padding:20px clamp(14px,4vw,24px);}
-  .title{font-size:22px; font-weight:800; text-align:center; letter-spacing:.02em; padding:6px 0 2px;}
-  .stats{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
-  .chip{font-size:12px; padding:4px 8px; border-radius:999px; background:#eef2ff; color:#334155; border:1px solid var(--border);}
-  .card{
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    box-shadow:var(--shadow); padding:16px; margin-top:12px;
-  }
-  .qtext{font-size:16px; white-space:pre-wrap}
-  .qimg{margin-top:10px; max-width:100%; border-radius:10px; border:1px solid var(--border)}
-  .choices{margin-top:12px; display:flex; flex-direction:column; gap:10px}
-  .choice{
-    text-align:left;
-    padding:12px 14px; border-radius:12px; border:1px solid var(--border);
-    background:#fff; cursor:pointer; transition:.15s ease;
-  }
-  .choice:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.06);}
-  .choice.correct{border-color:#a7f3d0; background:#ecfdf5;}
-  .choice.wrong{border-color:#fecaca; background:#fff1f2;}
-  .feedback{margin-top:12px; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:#fafafa; color:#111827}
-  .feedback.ok{border-color:#bbf7d0; background:#f0fdf4; color:#065f46}
-  .feedback.ng{border-color:#fecaca; background:#fff7f7; color:#991b1b}
-  .note{margin-top:10px; color:var(--muted); font-size:12px}
-  .footer{
-    position:sticky; bottom:0; background:var(--bg); padding:8px clamp(12px,4vw,24px) calc(8px + env(safe-area-inset-bottom));
-    border-top:1px solid var(--border); display:flex; gap:12px; z-index:20;
-  }
-  .btn{
-    appearance:none; border:0; border-radius:12px; padding:14px 16px; font-weight:700; font-size:16px; cursor:pointer;
-    box-shadow:var(--shadow);
-  }
-  .btn.primary{background:var(--brand); color:#fff; flex:1}
-  .btn.secondary{background:#ffffff; color:#111827; border:1px solid var(--border)}
-  .btn:disabled{opacity:.5; cursor:not-allowed; box-shadow:none}
-  .hidden{display:none}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>RCCM 問題4-1</title>
+  <style>
+    :root{
+      --bg:#0b1220;--panel:#0f172a;--muted:#94a3b8;--text:#e5e7eb;--accent:#22d3ee;--ok:#22c55e;--bad:#ef4444;--border:#1f2937;
+      --radius:16px;--shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#0b1220,#0f172a 40%,#0b1220);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif}
+    .wrapper{min-height:100%;display:flex;flex-direction:column}
+
+    /* Header */
+    header{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.7);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+    .container{max-width:880px;margin:0 auto;padding:14px 16px}
+    .title{font-weight:800;text-align:center;letter-spacing:.02em;font-size:clamp(20px,4.5vw,28px)}
+
+    /* Main */
+    main{flex:1}
+    .card{background:rgba(15,23,42,.85);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .year-no{display:flex;gap:8px;color:var(--muted);font-size:.95rem;align-items:center;margin-bottom:8px}
+    .question{font-size:clamp(16px,3.8vw,20px);line-height:1.7;margin:8px 0 12px}
+    .imgwrap{display:flex;justify-content:center;margin:10px 0}
+    .imgwrap img{max-width:100%;height:auto;border-radius:12px;border:1px solid var(--border)}
+
+    .choices{display:grid;gap:10px}
+    .choice{display:flex;align-items:flex-start;gap:10px;background:#0a1222;border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:transform .1s ease}
+    .choice:hover{transform:translateY(-1px)}
+    .choice.disabled{opacity:.7;cursor:default;transform:none}
+    .bullet{min-width:24px;height:24px;display:inline-grid;place-items:center;border-radius:999px;border:1px solid #334155;color:#cbd5e1;font-weight:700}
+    .text{flex:1;text-align:left}
+
+    .result{margin-top:12px;font-size:1rem}
+    .result.ok{color:var(--ok)}
+    .result.bad{color:var(--bad)}
+    .explain{margin-top:6px;color:var(--muted);font-size:.95rem}
+
+    /* Bottom bar */
+    .bottombar{position:sticky;bottom:0;z-index:30;background:rgba(11,18,32,.7);backdrop-filter:blur(6px);border-top:1px solid var(--border)}
+    .bar{max-width:880px;margin:0 auto;display:flex;gap:10px;padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+    .spacer{flex:1}
+    button{appearance:none;border:1px solid var(--border);border-radius:14px;padding:12px 16px;background:#0a1222;color:var(--text);font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(180deg,#06b6d4,#0891b2);border-color:#0891b2}
+    .btn-ghost{background:transparent}
+
+    @media (min-width:430px){
+      .container{padding:18px}
+      .choice{padding:16px}
+      .bullet{min-width:28px;height:28px}
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="title">RCCM 問題4-1</div>
-    <div class="stats">
-      <span class="chip" id="chip-year">年度 –</span>
-      <span class="chip" id="chip-no">No.–</span>
-      <span class="chip" id="chip-done">正解 0 / 出題 0</span>
-      <span class="chip" id="chip-msg"></span>
-    </div>
+  <div class="wrapper">
+    <header>
+      <div class="container">
+        <div class="title">RCCM 問題4-1</div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div id="card" class="card" hidden>
+          <div class="year-no" id="meta"></div>
+          <div class="question" id="q"></div>
+          <div class="imgwrap" id="imgwrap" hidden><img id="qimg" alt="問題図"/></div>
+          <div class="choices" id="choices"></div>
+          <div class="result" id="result"></div>
+          <div class="explain" id="explain"></div>
+        </div>
+        <div id="loading" class="card">読み込み中…</div>
+      </div>
+    </main>
+
+    <footer class="bottombar">
+      <div class="bar">
+        <button class="btn-ghost" id="resetBtn" title="正解済みをリセット">リセット</button>
+        <div class="spacer"></div>
+        <button class="btn-primary" id="nextBtn">次の問題</button>
+      </div>
+    </footer>
   </div>
-</header>
 
-<main class="wrap">
-  <div class="card">
-    <div id="qtext" class="qtext">読み込み中…</div>
-    <img id="qimg" class="qimg hidden" alt="question image"/>
-    <div id="choices" class="choices"></div>
-    <div id="feedback" class="feedback hidden"></div>
-    <div class="note">
-      ・出題はランダム／正解した問題はリセットまで再出題しません。<br>
-      ・選択肢をタップで即判定。不正解時は「正解は a/b/c/d」＋解説を表示します。<br>
-      ・出題数は無制限です。
-    </div>
-  </div>
-</main>
+  <!-- データチャンク -->
+  <script src="problems_chunk1_of4.js"></script>
+  <script src="problems_chunk2_of4.js"></script>
+  <script src="problems_chunk3_of4.js"></script>
+  <script src="problems_chunk4_of4.js"></script>
 
-<footer class="footer">
-  <button id="nextBtn" class="btn primary">次の問題</button>
-  <button id="resetBtn" class="btn secondary">リセット</button>
-</footer>
+  <!-- 本体ロジック -->
+  <script>
+    (function(){
+      const $ = (s)=>document.querySelector(s);
+      const metaEl = $('#meta');
+      const qEl = $('#q');
+      const imgWrap = $('#imgwrap');
+      const imgEl = $('#qimg');
+      const choicesEl = $('#choices');
+      const resultEl = $('#result');
+      const explainEl = $('#explain');
+      const cardEl = $('#card');
+      const loadingEl = $('#loading');
+      const nextBtn = $('#nextBtn');
+      const resetBtn = $('#resetBtn');
 
-<script>
-/* ===================== ユーティリティ ===================== */
+      const STORAGE_KEY = 'rccm_q_correct_ids_v1';
+      const LETTERS = ['a','b','c','d','e','f'];
 
-// GitHub Pages で文字化け・エンコード違いに強い読み込み
-async function fetchCsvText(path){
-  const ab = await fetch(path, {cache:'no-store'}).then(r=>{
-    if(!r.ok) throw new Error('CSV fetch failed'); return r.arrayBuffer();
-  });
-  const tryEnc = async(enc)=>{ try{ return new TextDecoder(enc).decode(ab);}catch{ return null;} };
-  let txt = await tryEnc('utf-8');
-  // 文字化け検知（� が多い）→ 代替デコード
-  if((txt.match(/\uFFFD/g)||[]).length > 5){
-    txt = await tryEnc('shift-jis') || await tryEnc('euc-jp') || await tryEnc('iso-2022-jp') || new TextDecoder().decode(ab);
-  }
-  return txt;
-}
+      function loadProblems(){
+        let list = [];
+        if(Array.isArray(window.PROBLEMS_CHUNKS)){
+          for(const chunk of window.PROBLEMS_CHUNKS){
+            if(Array.isArray(chunk)) list.push(...chunk);
+          }
+        }
+        list = list.map(n=>({
+          id: String(n.id ?? `${n.year}-${n.number}`),
+          year: Number(n.year ?? 0),
+          yearDisplay: String(n.yearDisplay ?? ''),
+          number: Number(n.number ?? 0),
+          question: String(n.question ?? ''),
+          image: String(n.image ?? ''),
+          choices: Array.isArray(n.choices) ? n.choices.map(x=>String(x)) : [],
+          correct: Number.isInteger(n.correct) ? n.correct : -1,
+          explanation: String(n.explanation ?? '')
+        })).filter(n=>n.choices.length>0);
+        return list;
+      }
 
-// シンプルCSVパーサ（ダブルクオート対応）
-function parseCSV(text){
-  const rows=[], row=[], pushCell=()=>{ row.push(cell.join('')); cell=[]; };
-  let i=0, c, cell=[], inQ=false;
-  while(i<text.length){
-    c=text[i++];
-    if(inQ){
-      if(c === '"'){
-        if(text[i] === '"'){ cell.push('"'); i++; } else { inQ=false; }
-      }else{ cell.push(c); }
-    }else{
-      if(c === '"'){ inQ=true; }
-      else if(c === ','){ pushCell(); }
-      else if(c === '\n'){ pushCell(); rows.push(row.slice()); row.length=0; }
-      else if(c === '\r'){ /* ignore */ }
-      else{ cell.push(c); }
-    }
-  }
-  pushCell(); if(row.length) rows.push(row);
-  return rows;
-}
+      let ALL = loadProblems();
+      let correctSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'));
 
-// a/b/c/d 等のキーを正規化（全角・丸数字・カナにも対応）
-function normalizeAnswerKey(key){
-  const m = String(key||'').trim();
-  if(!m) return '';
-  const map = {'ａ':'a','ｂ':'b','ｃ':'c','ｄ':'d','①':'a','②':'b','③':'c','④':'d','ア':'a','イ':'b','ウ':'c','エ':'d'};
-  return (map[m] || m).toLowerCase().replace(/[^abcd]/g,'');
-}
+      function saveCorrect(){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...correctSet]));
+      }
 
-/* --------- ★ 重要：choices の頑強パーサ --------- */
-function parseChoicesString(str){
-  if(!str) return [];
-  const s = String(str);
+      function pickRandom(){
+        const pool = ALL.filter(q=>!correctSet.has(q.id));
+        if(pool.length === 0){ return null; }
+        const idx = Math.floor(Math.random()*pool.length);
+        return pool[idx];
+      }
 
-  // 1) 素直な区切り（半角/全角の | / ; とタブ/改行）
-  const delim = /[|｜/／;；\t\r\n]+/;
-  let parts = s.split(delim).map(t=>t.trim()).filter(Boolean);
+      let current = null;
 
-  // 2) 連結型（a. … b. … c. …）をラベルで抽出
-  if(parts.length <= 1){
-    const rx = /(?:^|[|｜/／;；\t\r\n])\s*([a-dａ-ｄ①-④ア-エ])[\.\)．）:：]\s*([^|｜/／;；\t\r\n]+?)(?=(?:[|｜/／;；\t\r\n]\s*[a-dａ-ｄ①-④ア-エ][\.\)．）:：]|$))/gi;
-    let m, list=[];
-    while((m = rx.exec(s))){ list.push({ key:m[1], text:m[2].trim() }); }
-    if(list.length) return list;
-  }
+      function render(q){
+        if(!q){
+          qEl.textContent = '出題可能な問題がありません。リセットしてください。';
+          metaEl.textContent = '';
+          imgWrap.hidden = true; imgEl.src = '';
+          choicesEl.innerHTML=''; resultEl.textContent=''; explainEl.textContent='';
+          return;
+        }
+        metaEl.textContent = `${q.yearDisplay} / No.${q.number}`;
+        qEl.textContent = q.question;
+        if(q.image && q.image.startsWith('data:image')){
+          imgEl.src = q.image; imgWrap.hidden = false;
+        }else{ imgEl.src=''; imgWrap.hidden = true; }
 
-  // 3) それでも配列なら、先頭のラベルを剥がす
-  return parts.map(t=>{
-    const m = t.match(/^([a-dａ-ｄ①-④ア-エ])[\.\)．）:：]?\s*(.*)$/i);
-    return m ? { key:m[1], text:m[2]||'' } : { key:'', text:t };
-  });
-}
+        choicesEl.innerHTML=''; resultEl.textContent=''; resultEl.className='result'; explainEl.textContent='';
+        q.choices.forEach((text,i)=>{
+          const div = document.createElement('div');
+          div.className = 'choice'; div.dataset.index = String(i);
+          const bullet = document.createElement('div'); bullet.className = 'bullet';
+          bullet.textContent = LETTERS[i] || String(i+1);
+          const span = document.createElement('div'); span.className = 'text'; span.textContent = text;
+          div.appendChild(bullet); div.appendChild(span);
+          div.addEventListener('click', ()=> onChoose(i));
+          choicesEl.appendChild(div);
+        });
+      }
 
-/* --------- 行の正規化（この中で choices を作る） --------- */
-function normalizeRow(row){
-  const trim = v => (v==null ? '' : String(v).trim());
-  const item = {
-    year: trim(row.year),
-    yearDisplay: trim(row.yearDisplay || row.year),
-    number: trim(row.number),
-    question: trim(row.question),
-    image: trim(row.image_placeholder),
-    choices: [],
-    correct: trim(row.correct),
-    explanation: trim(row.explanation)
-  };
+      function lockChoices(){
+        choicesEl.querySelectorAll('.choice').forEach(el=>{
+          el.classList.add('disabled');
+          el.style.pointerEvents = 'none';
+        });
+      }
 
-  // choices: 配列 or 文字列 → 頑丈に分解
-  const rc = row.choices;
-  if(Array.isArray(rc)){ item.choices = rc.map(x=>({key:'', text:String(x).trim()})); }
-  else{ item.choices = parseChoicesString(String(rc||'')); }
+      function onChoose(i){
+        if(!current) return;
+        const isCorrect = (i === current.correct);
+        lockChoices();
+        if(isCorrect){
+          resultEl.textContent = '正解！';
+          resultEl.className = 'result ok';
+          correctSet.add(current.id); saveCorrect();
+        }else{
+          const letter = (LETTERS[current.correct]||String(current.correct+1));
+          resultEl.textContent = `不正解。正解は ${letter}`;
+          resultEl.className = 'result bad';
+        }
+        if(current.explanation){ explainEl.textContent = current.explanation; }
+      }
 
-  item.correct = normalizeAnswerKey(item.correct);
-  return item;
-}
+      function nextQuestion(){ current = pickRandom(); render(current); }
 
-/* --------- CSV -> オブジェクト配列 --------- */
-function rowsToObjects(rows){
-  if(!rows.length) return [];
-  const headers = rows[0].map(h=>String(h||'').trim());
-  const out=[];
-  for(let r=1; r<rows.length; r++){
-    const obj={};
-    headers.forEach((h,i)=>{ obj[h] = rows[r][i] ?? ''; });
-    out.push(normalizeRow(obj));
-  }
-  return out;
-}
+      function resetProgress(){
+        if(confirm('正解済みの記録をリセットしますか？')){
+          correctSet.clear(); saveCorrect(); nextQuestion();
+        }
+      }
 
-/* ===================== アプリ状態 ===================== */
-const state = {
-  all: [],               // 全問題
-  answeredCorrect:new Set(), // "year|number"
-  current:null,
-  drawCount:0,
-};
+      nextBtn.addEventListener('click', nextQuestion);
+      resetBtn.addEventListener('click', resetProgress);
 
-function qKey(q){ return `${q.year}|${q.number}`; }
+      function init(){
+        if(!ALL || ALL.length===0){
+          loadingEl.textContent = 'データが未設定です。';
+        }else{
+          loadingEl.hidden = true; cardEl.hidden = false;
+          nextQuestion();
+        }
+      }
 
-/* ランダムで未正解の問題を1つ選ぶ（全問正解なら全体からランダム） */
-function pickQuestion(){
-  const pool = state.all.filter(q => !state.answeredCorrect.has(qKey(q)));
-  const src = pool.length ? pool : state.all;
-  if(!src.length) return null;
-  return src[Math.floor(Math.random()*src.length)];
-}
-
-/* ===================== UI描画 ===================== */
-const elYear = document.getElementById('chip-year');
-const elNo   = document.getElementById('chip-no');
-const elDone = document.getElementById('chip-done');
-const elMsg  = document.getElementById('chip-msg');
-const qText  = document.getElementById('qtext');
-const qImg   = document.getElementById('qimg');
-const choicesEl = document.getElementById('choices');
-const feedbackEl = document.getElementById('feedback');
-const nextBtn = document.getElementById('nextBtn');
-const resetBtn = document.getElementById('resetBtn');
-
-function setStats(q){
-  elYear.textContent = q?.yearDisplay ? q.yearDisplay+'年度' : '年度 –';
-  elNo.textContent   = q?.number ? `No.${q.number}` : 'No.–';
-  elDone.textContent = `正解 ${state.answeredCorrect.size} / 出題 ${state.drawCount}`;
-}
-
-function renderQuestion(q){
-  state.current = q;
-  state.drawCount++;
-  setStats(q);
-  feedbackEl.classList.add('hidden'); feedbackEl.textContent='';
-
-  qText.textContent = q.question || '（問題文なし）';
-
-  // 画像表示（URL or data URL）
-  if(q.image){
-    qImg.src = q.image;
-    qImg.onload = ()=> qImg.classList.remove('hidden');
-    qImg.onerror = ()=> qImg.classList.add('hidden');
-  }else{
-    qImg.classList.add('hidden');
-    qImg.removeAttribute('src');
-  }
-
-  // 選択肢
-  choicesEl.innerHTML='';
-  const letters = ['a','b','c','d','e','f']; // 念のため拡張
-  const items = q.choices && q.choices.length ? q.choices : [];
-  if(!items.length){
-    const div=document.createElement('div');
-    div.className='feedback ng';
-    div.textContent='この設問の選択肢が見つかりません。CSVの choices 列を確認してください。';
-    choicesEl.appendChild(div);
-    return;
-  }
-  items.forEach((ch,idx)=>{
-    const div=document.createElement('button');
-    div.type='button';
-    div.className='choice';
-    div.dataset.key = normalizeAnswerKey(ch.key || letters[idx]);
-    div.innerHTML = `<strong style="margin-right:8px;">${(ch.key?String(ch.key):letters[idx]).replace('ａ','a').replace('ｂ','b').replace('ｃ','c').replace('ｄ','d')}.</strong>${escapeHtml(ch.text)}`;
-    div.addEventListener('click',()=>onChoose(div.dataset.key));
-    choicesEl.appendChild(div);
-  });
-}
-
-function escapeHtml(s){
-  return String(s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-
-function onChoose(chosenKey){
-  const q = state.current;
-  if(!q) return;
-  const correct = q.correct || 'a';
-  const nodes = [...choicesEl.querySelectorAll('.choice')];
-  nodes.forEach(n=>{
-    const k = n.dataset.key;
-    if(k === correct){ n.classList.add('correct'); }
-    if(k === chosenKey && k !== correct){ n.classList.add('wrong'); }
-    n.disabled = true;
-  });
-
-  const isOk = (chosenKey === correct);
-  const prefix = isOk ? '正解！' : `不正解　正解は ${correct}`;
-  const exp = q.explanation ? `　解説：${q.explanation}` : '';
-  feedbackEl.textContent = prefix + exp;
-  feedbackEl.classList.remove('hidden');
-  feedbackEl.classList.toggle('ok', isOk);
-  feedbackEl.classList.toggle('ng', !isOk);
-
-  if(isOk){ state.answeredCorrect.add(qKey(q)); }
-  setStats(q);
-}
-
-nextBtn.addEventListener('click', ()=>{
-  const q = pickQuestion();
-  if(!q){ elMsg.textContent='問題が見つかりません'; return; }
-  renderQuestion(q);
-});
-
-resetBtn.addEventListener('click', ()=>{
-  state.answeredCorrect.clear();
-  state.drawCount = 0;
-  setStats({});
-  elMsg.textContent='正解履歴をリセットしました';
-});
-
-/* ===================== 起動：CSV読込 ===================== */
-(async function init(){
-  try{
-    const txt = await fetchCsvText('problems.csv');
-    const rows = parseCSV(txt);
-    const data = rowsToObjects(rows);
-    if(!data.length) throw new Error('CSV が空です');
-    state.all = data;
-    elMsg.textContent='';
-    renderQuestion(pickQuestion());
-  }catch(err){
-    console.error(err);
-    qText.textContent = '読み込みに失敗しました。CSVの配置やエンコード(UTF-8)をご確認ください。';
-    elMsg.textContent = 'CSV読込エラー';
-  }
-})();
-</script>
+      init();
+    })();
+  </script>
 </body>
 </html>
