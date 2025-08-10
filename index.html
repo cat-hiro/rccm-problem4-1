@@ -7,68 +7,38 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <style>
   :root{
-    --bg:#f8fafc;
-    --fg:#0f172a;
-    --muted:#475569;
-    --card:#ffffff;
-    --accent:#2563eb;
-    --accent-weak:#dbeafe;
-    --ok:#16a34a;
-    --ng:#dc2626;
-    --border:#e2e8f0;
+    --bg:#f8fafc; --fg:#0f172a; --muted:#475569; --card:#ffffff;
+    --accent:#2563eb; --accent-weak:#dbeafe; --ok:#16a34a; --ng:#dc2626; --border:#e2e8f0;
   }
   html,body{height:100%}
-  body{
-    margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
-    color:var(--fg); background:var(--bg);
-    display:flex; flex-direction:column;
-  }
-  header{
-    position:sticky; top:0; z-index:5; background:var(--bg);
-    border-bottom:1px solid var(--border);
-  }
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--fg);background:var(--bg);display:flex;flex-direction:column}
+  header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border)}
   .wrap{max-width:900px;margin:0 auto;padding:12px 16px}
-  h1{margin:4px 0 8px; text-align:center; font-size:20px; letter-spacing:.02em}
-  main{flex:1; display:flex}
-  .card{
-    background:var(--card); border:1px solid var(--border); border-radius:14px;
-    padding:16px; margin:16px auto; width:min(900px,calc(100% - 24px));
-    box-shadow:0 1px 2px rgba(0,0,0,.04);
-  }
-  .meta{font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  .question{margin:8px 0 6px; font-size:16px; line-height:1.6}
-  .imgbox{margin:10px 0; display:flex; justify-content:center}
-  .imgbox img{max-width:100%; height:auto; border:1px solid var(--border); border-radius:10px}
-  .choices{display:flex; flex-direction:column; gap:8px; margin-top:10px}
-  .choice{
-    text-align:left; padding:12px 14px; border:1px solid var(--border); border-radius:12px;
-    background:#fff; cursor:pointer; transition:transform .02s ease;
-  }
+  h1{margin:4px 0 8px;text-align:center;font-size:20px;letter-spacing:.02em}
+  main{flex:1;display:flex}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin:16px auto;width:min(900px,calc(100% - 24px));box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .question{margin:8px 0 6px;font-size:16px;line-height:1.6}
+  .imgbox{margin:10px 0;display:flex;justify-content:center}
+  .imgbox img{max-width:100%;height:auto;border:1px solid var(--border);border-radius:10px}
+  .choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .choice{text-align:left;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff;cursor:pointer;transition:transform .02s ease}
   .choice:hover{transform:translateY(-1px)}
-  .choice.correct{border-color:var(--ok); background:#ecfdf5}
-  .choice.incorrect{border-color:var(--ng); background:#fef2f2}
-  .result{margin-top:12px; padding:10px 12px; border-radius:10px; font-size:14px}
-  .result.ok{background:#ecfdf5; color:#065f46; border:1px solid #bbf7d0}
-  .result.ng{background:#fef2f2; color:#7f1d1d; border:1px solid #fecaca}
-  .explanation{margin-top:6px; font-size:14px; color:#0f172a}
-  .footerbar{
-    position:sticky; bottom:0; z-index:6; background:var(--bg);
-    border-top:1px solid var(--border);
-  }
-  .footerinner{
-    max-width:900px; margin:0 auto; padding:10px 12px; display:flex; gap:8px;
-  }
-  button{
-    -webkit-tap-highlight-color: transparent;
-    appearance:none; border:none; border-radius:12px; padding:12px 14px; font-size:15px; cursor:pointer;
-    background:var(--accent); color:#fff; flex:1;
-  }
-  button.secondary{background:#fff; color:var(--fg); border:1px solid var(--border); flex:0 0 auto}
-  .pill{background:var(--accent-weak); color:var(--accent); border-radius:999px; padding:4px 8px; font-size:12px}
+  .choice.correct{border-color:var(--ok);background:#ecfdf5}
+  .choice.incorrect{border-color:var(--ng);background:#fef2f2}
+  .result{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:14px}
+  .result.ok{background:#ecfdf5;color:#065f46;border:1px solid #bbf7d0}
+  .result.ng{background:#fef2f2;color:#7f1d1d;border:1px solid #fecaca}
+  .explanation{margin-top:6px;font-size:14px;color:#0f172a}
+  .footerbar{position:sticky;bottom:0;z-index:6;background:var(--bg);border-top:1px solid var(--border)}
+  .footerinner{max-width:900px;margin:0 auto;padding:10px 12px;display:flex;gap:8px}
+  button{-webkit-tap-highlight-color:transparent;appearance:none;border:none;border-radius:12px;padding:12px 14px;font-size:15px;cursor:pointer;background:var(--accent);color:#fff;flex:1}
+  button.secondary{background:#fff;color:var(--fg);border:1px solid var(--border);flex:0 0 auto}
+  .pill{background:var(--accent-weak);color:var(--accent);border-radius:999px;padding:4px 8px;font-size:12px}
 </style>
 </head>
 <body>
-  <header><div class="wrap"><h1>RCCM 問題4-2</h1></div></header>
+  <header><div class="wrap"><h1>RCCM 問題4-1</h1></div></header>
   <main>
     <section class="card" id="qa">
       <div class="meta">
@@ -94,67 +64,69 @@
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
 /** ===== ユーザ設定 ===== **/
-const CSV_FILE = 'problems.csv'; // 同じフォルダに置く
+const CSV_FILE = 'problems.csv'; // 同じフォルダ
 const EXPECT_COLS = ["year","yearDisplay","number","question","image_placeholder","choices","correct","explanation"];
 
 /** ===== 状態 ===== **/
 let allItems = [];
-let remaining = []; // 正解していない問題のプール
+let remaining = [];
 let solvedKeys = new Set();
 let stats = { shown: 0, correct: 0 };
 let current = null;
 
-/** ===== 文字コード自動判別付きCSV読込 ===== **/
+/** ===== ユーティリティ ===== **/
+function getQueryParam(name){ return new URLSearchParams(location.search).get(name); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+function keyOf(item){ return `${item.yearDisplay}#${item.number}`; }
+
+/** ===== 文字コード自動判別（強化版） ===== **/
 async function fetchCsvSmart(url){
-  const buf = await fetch(url, {cache:'no-store'}).then(r=>{
-    if(!r.ok) throw new Error('CSVを取得できませんでした: '+r.status);
+  const encOverride = (getQueryParam('enc')||'').toLowerCase();
+  const buf = await fetch(url,{cache:'no-store'}).then(r=>{
+    if(!r.ok) throw new Error('CSV取得失敗: '+r.status);
     return r.arrayBuffer();
   });
 
-  // まずUTF-8で試す
-  let textUtf8 = new TextDecoder('utf-8').decode(buf);
-  let ok = looksValidCsv(textUtf8);
-  if(ok) return textUtf8;
+  const tryDecode = (enc)=>{
+    try{ return new TextDecoder(enc).decode(buf); }catch(e){ return null; }
+  };
 
-  // Shift_JISで再試行
-  try{
-    let textSjis = new TextDecoder('shift_jis').decode(buf);
-    if(looksValidCsv(textSjis)) return textSjis;
-    // どちらも合わない場合はUTF-8を返してパース側でエラーに
-    return textUtf8;
-  }catch(e){
-    return textUtf8;
+  const scoreText = (txt)=>{
+    if(!txt) return -1;
+    // 置換文字があれば即減点
+    if(txt.includes('\uFFFD')) return -1;
+    // 必須ヘッダが含まれているか
+    const head = txt.slice(0, 4096).toLowerCase();
+    let ok = EXPECT_COLS.every(c => head.includes(c.toLowerCase()));
+    return ok ? 1 : 0;
+  };
+
+  let order = ['utf-8','shift_jis'];
+  if(encOverride==='sjis') order = ['shift_jis','utf-8'];
+  if(encOverride==='utf8') order = ['utf-8','shift_jis'];
+
+  let bestText = null, bestScore = -2;
+  for(const enc of order){
+    const t = tryDecode(enc);
+    const sc = scoreText(t);
+    if(sc > bestScore){ bestScore = sc; bestText = t; }
+    if(sc === 1) break; // 十分良好
   }
+  return bestText || tryDecode(order[0]);
 }
 
-function looksValidCsv(text){
-  // 期待するヘッダが含まれているか簡易判定
-  const head = text.slice(0, 2048);
-  const lc = head.toLowerCase();
-  return EXPECT_COLS.every(c => lc.includes(c.toLowerCase()));
-}
-
+/** ===== CSV読み込み ===== **/
 async function loadCsv(){
   const raw = await fetchCsvSmart(CSV_FILE);
   return new Promise((resolve, reject)=>{
     Papa.parse(raw, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: false,
-      complete: results => {
-        if(!results.data || !results.data.length){
-          reject(new Error('CSVにデータがありません'));
-          return;
-        }
-        // 列チェック（緩め：最低限必要な列があるか）
-        const cols = Object.keys(results.data[0] || {});
-        const missing = EXPECT_COLS.filter(c => !cols.includes(c));
-        if(missing.length){
-          console.warn('列が見つからないため継続（自動判別でズレることがあります）:', missing);
-        }
+      header: true, skipEmptyLines: true, dynamicTyping: false,
+      complete: results=>{
+        if(!results.data || !results.data.length){ reject(new Error('CSVにデータがありません')); return; }
         resolve(results.data);
       },
-      error: err => reject(err)
+      error: err=>reject(err)
     });
   });
 }
@@ -173,80 +145,53 @@ function normalizeRow(row){
     explanation: trim(row.explanation)
   };
 
-  // 選択肢：CSV側が "a)xxx|b)yyy|c)zzz" のような区切りの場合を想定
-  // パイプ or 改行 or セミコロン を優先的に分割
-  let rawChoices = row.choices;
+  // 選択肢の分割（| / 改行 / ; に対応）
   let list = [];
+  const rawChoices = row.choices;
   if(Array.isArray(rawChoices)) list = rawChoices;
   else if(typeof rawChoices === 'string'){
     const s = rawChoices.replace(/\r\n/g,'\n');
     if(s.includes('|')) list = s.split('|');
     else if(s.includes('\n')) list = s.split('\n');
     else if(s.includes(';')) list = s.split(';');
-    else list = [s]; // フォールバック
+    else list = [s];
   }
-  // 各選択肢を「ラベル(a/b/1/ア)」「本文」に分離（左揃え表示用）
   item.choices = list.map(x=>{
     const t = String(x).trim();
-    // 例: "a. 〇〇", "a) 〇〇", "（a）〇〇" 等を判定
-    const m = t.match(/^([a-zA-Z]|[①-⑳]|[ア-オ]|[0-9]|[ａ-ｚＡ-Ｚ])[\.\)\］\】】\s　-]*\s*(.*)$/);
-    if(m){
-      return { key: m[1].toString(), text: m[2] || t };
-    }else{
-      return { key: "", text: t };
-    }
+    const m = t.match(/^([a-zA-Z]|[①-⑳]|[ア-オ]|[0-9]|[ａ-ｚＡ-Ｚ])[\.\)\]】＞＞\s　-]*\s*(.*)$/);
+    return m ? { key: m[1].toString(), text: m[2] || t } : { key:"", text:t };
   });
 
-  // 正解キーを正規化（全角→半角、小文字化）
   item.correct = normalizeAnswerKey(item.correct);
-
   return item;
 }
 
 function normalizeAnswerKey(s){
   if(!s) return '';
-  let t = String(s).trim();
-  // 「正解はa」「a」「A」「１」「①」等からキーを抽出
-  t = t.replace(/^正解[は:：]\s*/,'');
-  // 全角英数→半角
-  t = t.normalize('NFKC').toLowerCase();
-  // 先頭1文字（英数字・カナ丸数字等）を採用
+  let t = String(s).trim().replace(/^正解[は:：]\s*/,'').normalize('NFKC').toLowerCase();
   const m = t.match(/^([a-z0-9ア-オ①-⑳])/);
   return m ? m[1] : t;
 }
-
 function choiceMatchesCorrect(choiceKey, correct){
   if(!correct) return false;
-  let ck = (choiceKey || '').toString().normalize('NFKC').toLowerCase();
-  let co = (correct || '').toString().normalize('NFKC').toLowerCase();
-  if(!ck && !co) return false;
-  // ①→1, ②→2 なども受け入れ
-  const circ = '①②③④⑤⑥⑦⑧⑨⑩';
-  const idx = circ.indexOf(ck);
-  if(idx >= 0){ ck = String(idx+1); }
-  const idx2 = circ.indexOf(co);
-  if(idx2 >= 0){ co = String(idx2+1); }
-  return ck === co;
+  let ck = (choiceKey||'').toString().normalize('NFKC').toLowerCase();
+  let co = (correct||'').toString().normalize('NFKC').toLowerCase();
+  const circ='①②③④⑤⑥⑦⑧⑨⑩'; const i1=circ.indexOf(ck); if(i1>=0) ck=String(i1+1);
+  const i2=circ.indexOf(co); if(i2>=0) co=String(i2+1);
+  return ck===co;
 }
 
 /** ===== 出題制御 ===== **/
-function keyOf(item){ return `${item.yearDisplay}#${item.number}`; }
-
 function pickRandom(){
-  if(remaining.length === 0){
-    renderEnd();
-    return;
-  }
+  if(remaining.length===0){ renderEnd(); return; }
   const i = Math.floor(Math.random()*remaining.length);
   current = remaining[i];
   renderQuestion(current);
 }
-
 function markSolved(item){
   const k = keyOf(item);
   if(!solvedKeys.has(k)){
     solvedKeys.add(k);
-    // プールから除外
     remaining = remaining.filter(x => keyOf(x)!==k);
   }
   saveProgress();
@@ -254,24 +199,16 @@ function markSolved(item){
 
 /** ===== 永続化 ===== **/
 function saveProgress(){
-  const data = {
-    solved: Array.from(solvedKeys),
-    stats
-  };
-  localStorage.setItem('rccm42_state', JSON.stringify(data));
+  localStorage.setItem('rccm42_state', JSON.stringify({ solved:[...solvedKeys], stats }));
 }
-
 function loadProgress(){
-  const s = localStorage.getItem('rccm42_state');
-  if(!s) return;
   try{
-    const data = JSON.parse(s);
-    solvedKeys = new Set(data.solved || []);
-    stats = data.stats || stats;
-  }catch(e){}
+    const s = localStorage.getItem('rccm42_state'); if(!s) return;
+    const d = JSON.parse(s); solvedKeys = new Set(d.solved||[]); stats = d.stats||stats;
+  }catch{}
 }
 
-/** ===== UI描画 ===== **/
+/** ===== UI ===== **/
 function renderQuestion(item){
   document.getElementById('year').textContent = item.yearDisplay || item.year || '—';
   document.getElementById('num').textContent = `No.${item.number||'—'}`;
@@ -279,111 +216,54 @@ function renderQuestion(item){
   document.getElementById('question').textContent = item.question || '—';
 
   // 画像
-  const box = document.getElementById('imgBox');
-  const img = document.getElementById('qimg');
-  if(item.image){
-    img.src = item.image;
-    img.alt = '問題画像';
-    box.style.display = '';
-  }else{
-    img.removeAttribute('src');
-    box.style.display = 'none';
-  }
+  const box = document.getElementById('imgBox'); const img=document.getElementById('qimg');
+  if(item.image){ img.src=item.image; img.alt='問題画像'; box.style.display=''; } else { img.removeAttribute('src'); box.style.display='none'; }
 
   // 選択肢
-  const wrap = document.getElementById('choices');
-  wrap.innerHTML = '';
-  item.choices.forEach((ch, idx)=>{
-    const btn = document.createElement('button');
-    btn.className = 'choice';
-    btn.type = 'button';
+  const wrap = document.getElementById('choices'); wrap.innerHTML='';
+  item.choices.forEach((ch)=>{
+    const btn=document.createElement('button'); btn.className='choice'; btn.type='button';
     const label = ch.key ? `${ch.key}. ` : '';
     btn.innerHTML = `<span>${label}${escapeHtml(ch.text)}</span>`;
-    btn.addEventListener('click', ()=>{
-      handleAnswer(ch);
-    }, {once:true});
+    btn.addEventListener('click', ()=>handleAnswer(ch), {once:true});
     wrap.appendChild(btn);
   });
 
-  // 結果表示エリア初期化
-  const res = document.getElementById('result');
-  const exp = document.getElementById('explanation');
-  res.style.display = 'none'; exp.style.display = 'none';
-  res.className = 'result'; res.textContent = '';
+  // リセット表示
+  const res = document.getElementById('result'); const exp = document.getElementById('explanation');
+  res.style.display='none'; exp.style.display='none'; res.className='result'; res.textContent='';
 
-  // 出題カウント（表示時点で増やす）
   stats.shown++; saveProgress();
   document.getElementById('progress').textContent = `正解 ${stats.correct} / 出題 ${stats.shown}`;
 }
-
 function handleAnswer(ch){
-  // どのボタンが押されたか
-  const choiceButtons = [...document.querySelectorAll('.choice')];
-  const correctIndex = current.choices.findIndex(c => choiceMatchesCorrect(c.key, current.correct));
-  const pickedIndex = current.choices.indexOf(ch);
-  const isOk = choiceMatchesCorrect(ch.key, current.correct);
-
-  // 見た目更新
-  choiceButtons.forEach((b, i)=>{
-    if(i === pickedIndex){
-      b.classList.add(isOk ? 'correct' : 'incorrect');
-    }
-    if(i === correctIndex){
-      b.style.borderColor = 'var(--ok)';
-    }
-    b.disabled = true;
+  const choiceButtons=[...document.querySelectorAll('.choice')];
+  const correctIndex=current.choices.findIndex(c=>choiceMatchesCorrect(c.key,current.correct));
+  const pickedIndex=current.choices.indexOf(ch);
+  const isOk=choiceMatchesCorrect(ch.key,current.correct);
+  choiceButtons.forEach((b,i)=>{
+    if(i===pickedIndex) b.classList.add(isOk?'correct':'incorrect');
+    if(i===correctIndex) b.style.borderColor='var(--ok)';
+    b.disabled=true;
   });
-
-  // メッセージ
-  const res = document.getElementById('result');
-  const exp = document.getElementById('explanation');
-  res.style.display = '';
-  if(isOk){
-    res.className = 'result ok';
-    res.textContent = '正解！';
-    stats.correct++; markSolved(current);
-  }else{
-    res.className = 'result ng';
-    const rightKey = current.choices[correctIndex]?.key || current.correct || '—';
-    res.textContent = `不正解　正解は ${rightKey}`;
-  }
-  if(current.explanation){
-    exp.style.display = '';
-    exp.textContent = `解説：${current.explanation}`;
-  }
+  const res=document.getElementById('result'); const exp=document.getElementById('explanation');
+  res.style.display=''; if(isOk){ res.className='result ok'; res.textContent='正解！'; stats.correct++; markSolved(current); }
+  else{ res.className='result ng'; const rk=current.choices[correctIndex]?.key||current.correct||'—'; res.textContent=`不正解　正解は ${rk}`; }
+  if(current.explanation){ exp.style.display=''; exp.textContent=`解説：${current.explanation}`; }
   saveProgress();
   document.getElementById('progress').textContent = `正解 ${stats.correct} / 出題 ${stats.shown}`;
 }
-
 function renderEnd(){
-  document.getElementById('question').textContent = '（正解済み以外の問題がありません）';
-  document.getElementById('choices').innerHTML = '';
-  document.getElementById('imgBox').style.display = 'none';
-  const res = document.getElementById('result');
-  res.style.display = 'none';
-  const exp = document.getElementById('explanation');
-  exp.style.display = 'none';
+  document.getElementById('question').textContent='（正解済み以外の問題がありません）';
+  document.getElementById('choices').innerHTML=''; document.getElementById('imgBox').style.display='none';
+  document.getElementById('result').style.display='none'; document.getElementById('explanation').style.display='none';
 }
 
-/** ===== ユーティリティ ===== **/
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = (Math.random()*(i+1))|0;
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-  return arr;
-}
-
-/** ===== イベント ===== **/
+/** ===== ボタン ===== **/
 document.getElementById('nextBtn').addEventListener('click', pickRandom);
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   if(confirm('正解済みフラグをリセットしますか？')){
-    localStorage.removeItem('rccm42_state');
-    solvedKeys.clear();
-    stats = { shown:0, correct:0 };
-    remaining = allItems.slice();
-    pickRandom();
+    localStorage.removeItem('rccm42_state'); solvedKeys.clear(); stats={shown:0,correct:0}; remaining=allItems.slice(); pickRandom();
   }
 });
 
@@ -394,18 +274,15 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
     const rows = await loadCsv();
     allItems = rows.map(normalizeRow);
 
-    // 正解済みを除外
+    // 正解済みを除外してプール作成
     const solved = new Set(solvedKeys);
     remaining = allItems.filter(x => !solved.has(keyOf(x)));
-
-    // 同じ問題が続かないようにシャッフル
     shuffle(remaining);
-
     pickRandom();
   }catch(e){
     console.error(e);
-    const q = document.getElementById('question');
-    q.textContent = 'CSVの読み込みに失敗しました。problems.csv が同じフォルダにあるか、文字コード(UTF-8/Shift_JIS)をご確認ください。';
+    document.getElementById('question').textContent =
+      'CSVの読み込みに失敗しました。problems.csv が同じフォルダにあるか、文字コード(UTF-8/Shift_JIS)をご確認ください。';
   }
 })();
 </script>
