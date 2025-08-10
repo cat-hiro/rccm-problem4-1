@@ -1,338 +1,418 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>RCCM 問題4-1</title>
+  <title>RCCM 問題4-1	</title>
   <style>
     :root{
-      --bg:#f7f7fb;
-      --card:#ffffff;
-      --text:#1b1f24;
-      --muted:#6b7280;
-      --accent:#2563eb;
-      --accent-weak:#e8efff;
+      --brand:#2563eb;
+      --brand-700:#1d4ed8;
       --ok:#16a34a;
       --ng:#dc2626;
-      --border:#e5e7eb;
-      --shadow: 0 10px 30px rgba(0,0,0,.08);
-      --radius:18px;
-      --tap:16px; /* iPhone用タッチ余白 */
+      --bg:#f7f8fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --ring:#cbd5e1;
+      --shadow:0 10px 24px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.05);
+      --radius:14px;
     }
-    html,body{
-      margin:0;padding:0;background:var(--bg);color:var(--text);font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-      line-height:1.6;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "YuGothic", "Meiryo", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.65;
     }
-    header{
-      position:sticky;top:0;background:var(--bg);padding:18px 16px 8px;z-index:10;
+    .appbar{
+      position:sticky; top:0; z-index:20;
+      background:linear-gradient(180deg,#fff,#fbfcff);
+      border-bottom:1px solid var(--ring);
+      padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+      text-align:center;
     }
     .title{
-      text-align:center;font-weight:800;letter-spacing:.02em;
-      font-size:clamp(18px,4.6vw,24px);
+      margin:0;
+      font-weight:800;
+      letter-spacing:.2px;
+      color:#1f2937;
     }
-    .wrap{max-width:820px;margin:0 auto;padding:10px 14px 100px;}
+    .wrap{max-width:980px;margin:18px auto calc(100px + env(safe-area-inset-bottom));padding:0 14px;}
+    .infoRow{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      color:var(--muted); font-size:13px; margin:10px 0 8px;
+    }
+    .chip{background:#eef2ff;color:#3730a3;border:1px solid #e0e7ff;padding:2px 8px;border-radius:999px}
     .card{
-      background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);
-      padding:18px 16px;margin-top:12px;
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
     }
-    .meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin-bottom:8px;}
-    .qtext{font-size:clamp(17px,4.3vw,20px);font-weight:600;word-break:normal;white-space:pre-wrap;}
-    .qimage{
-      margin:14px 0 6px;display:none;border-radius:12px;border:1px solid var(--border);max-height:38vh;object-fit:contain;background:#fafafa;
-    }
-    .choices{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+    .qHeader{display:flex;gap:10px;align-items:baseline; flex-wrap:wrap}
+    .qNum{font-size:12px;color:var(--muted)}
+    .question{font-size:18px; font-weight:600; margin:6px 0 8px; word-break:break-word}
+    .imgWrap{margin:10px 0 6px}
+    .imgWrap img{max-width:100%; border-radius:10px; border:1px solid var(--ring)}
+    .choices{display:flex; flex-direction:column; gap:10px; margin-top:10px}
     .choice{
-      text-align:left; /* 指定：選択肢左揃え */
-      background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 12px;cursor:pointer;user-select:none;
-      font-size:clamp(16px,4.2vw,18px); display:flex;gap:10px;align-items:flex-start;
-      touch-action:manipulation;
-    }
-    .choice:active{transform:translateY(1px)}
-    .badge{
-      min-width:26px;height:26px;border-radius:8px;display:inline-grid;place-items:center;font-weight:700;border:1px solid var(--border);background:#f9fafb;font-size:14px;
-    }
-    .explain{
-      margin-top:10px;border-top:1px dashed var(--border);padding-top:10px;font-size:15px;color:#111827;white-space:pre-wrap;
-    }
-    .status{
-      margin-top:10px;font-weight:700;font-size:16px;
-    }
-    .status.ok{color:var(--ok)}
-    .status.ng{color:var(--ng)}
-    .footer{
-      position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--border);
-      padding:10px env(safe-area-inset-right) calc(10px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
-      display:flex;gap:10px;justify-content:space-between;align-items:center;
-    }
-    .btn{
-      flex:1; text-align:center; border-radius:14px; border:1px solid var(--border); padding:14px 10px;
-      font-weight:700; font-size:17px; cursor:pointer; user-select:none; touch-action:manipulation;
+      text-align:left; /* 左揃え */
       background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px 14px;
+      transition:transform .02s ease, border-color .15s ease, box-shadow .15s ease;
+      cursor:pointer;
+      box-shadow: 0 1px 0 rgba(2,6,23,.04);
     }
-    .btn.primary{background:var(--accent);color:#fff;border-color:transparent}
-    .btn:active{transform:translateY(1px)}
-    .hint{color:var(--muted);font-size:13px}
+    .choice:hover{transform:translateY(-1px)}
+    .choice.correct{border-color:var(--ok); box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+    .choice.wrong{border-color:var(--ng); box-shadow:0 0 0 3px rgba(220,38,38,.12)}
+    .explain{
+      margin-top:10px; font-size:14px; color:#0f172a;
+      background:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 12px;
+      display:none;
+    }
+    .notice{margin:12px 0 0; font-size:12px; color:var(--muted)}
+    .bar{
+      position:fixed; left:0; right:0; bottom:0; z-index:30;
+      background:#fff; border-top:1px solid var(--ring);
+      padding:8px max(12px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-right));
+    }
+    .barInner{max-width:980px; margin:0 auto; display:flex; gap:12px}
+    .btn{
+      flex:1; display:inline-flex; align-items:center; justify-content:center;
+      font-weight:700; border-radius:12px; height:52px; border:1px solid transparent;
+      box-shadow:var(--shadow); letter-spacing:.2px; cursor:pointer; user-select:none;
+    }
+    .btnPrimary{background:var(--brand); color:#fff}
+    .btnPrimary:active{background:var(--brand-700)}
+    .btnGhost{background:#fff; color:#111827; border-color:#e5e7eb}
+    .muted{color:var(--muted)}
     .hidden{display:none !important}
-    .chip{padding:3px 8px;border-radius:999px;background:var(--accent-weak);color:var(--accent);font-weight:700;font-size:12px;border:1px solid #d9e5ff}
+    .error{
+      background:#fff1f2; color:#991b1b; border:1px solid #fecaca;
+      padding:10px 12px; border-radius:12px; margin-top:10px; font-size:14px;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="title">RCCM 問題4-2</div>
+  <header class="appbar">
+    <h1 class="title">RCCM 問題4-1	</h1>
   </header>
 
-  <div class="wrap">
-    <div class="card" id="qCard">
-      <div class="meta">
-        <div id="metaYear" class="chip">年度</div>
-        <div id="metaNo" class="chip">No.</div>
-        <div id="metaProgress" class="hint">正解済: <span id="doneCount">0</span></div>
+  <main class="wrap">
+    <div class="infoRow">
+      <span class="chip">年度 <span id="yr">-</span></span>
+      <span class="chip">No. <span id="num">-</span></span>
+      <span class="muted">正解済: <span id="cleared">0</span></span>
+    </div>
+
+    <section id="card" class="card">
+      <div class="qHeader">
+        <div class="qNum" id="idxText"></div>
       </div>
+      <div id="qText" class="question">読み込み中…</div>
+      <div id="imgSlot" class="imgWrap hidden"></div>
 
-      <img id="qImage" alt="問題画像" class="qimage" />
-      <div class="qtext" id="qText">読み込み中…</div>
+      <div id="choices" class="choices"></div>
 
-      <div class="choices" id="choices"></div>
+      <div id="explain" class="explain"></div>
+      <div id="errorMsg" class="error hidden"></div>
 
-      <div id="status" class="status hidden"></div>
-      <div id="explain" class="explain hidden"></div>
+      <div class="notice">
+        ・出題はランダム / 正解した問題はリセットまで再出題しません。<br>
+        ・各選択肢をタップで即判定。不正解時は「正解は a/b/c/d」＋解説を表示します。<br>
+        ・出題数は無制限です。
+      </div>
+    </section>
+  </main>
+
+  <div class="bar">
+    <div class="barInner">
+      <button id="nextBtn" class="btn btnPrimary">次の問題</button>
+      <button id="resetBtn" class="btn btnGhost">正解履歴リセット</button>
     </div>
   </div>
 
-  <div class="footer">
-    <button id="nextBtn" class="btn primary">次の問題</button>
-    <button id="resetBtn" class="btn">正解履歴リセット</button>
-  </div>
+<script>
+/* ========= ユーティリティ ========= */
+const STORAGE_KEY = 'rccm-4-1-solved-v2';
+const CHOICE_PREFIX = ['a','b','c','d','e','f']; // 拡張に備えて
 
-  <!-- PapaParse（CSV安全パース用）※1ファイル運用のためCDN読込 -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-  <script>
-  // ===== 設定 =====
-  // CSVは index.html と同じ階層に「problems.csv」という名前で置いてください（UTF-8 BOM推奨）
-  const CSV_PATH = 'problems.csv';
-
-  // ===== ユーティリティ =====
-  const fullWidthMap = {'ａ':'a','ｂ':'b','ｃ':'c','ｄ':'d','Ａ':'a','Ｂ':'b','Ｃ':'c','Ｄ':'d'};
-  const badgeLetters = ['a','b','c','d','e','f'];
-
-  function nfkcLower(s){ return (s ?? '').toString().trim().normalize('NFKC').toLowerCase(); }
-  function normalizeKey(s){
-    s = nfkcLower(s);
-    if (fullWidthMap[s]) return fullWidthMap[s];
-    // 先頭1文字がa-dなら抽出（例: "a) xxx", "a．xxx"）
-    if (/^[a-d]/.test(s)) return s[0];
-    return s;
+function normalizeCorrect(v){
+  if(v == null) return null;
+  const s = String(v).trim();
+  if(/^\d+$/.test(s)){ // "1"→a
+    const idx = parseInt(s,10)-1;
+    return CHOICE_PREFIX[idx] || null;
   }
-  // choices文字列を柔軟に分割（"||" / "｜" / "|" / "／" / "、" など想定）
-  function splitChoices(raw){
-    const t = (raw ?? '').toString().trim();
-    const sep = ['||','｜','|','／','、',';','／／'].find(sp => t.includes(sp));
-    const arr = sep ? t.split(sep) : t.split('\t');
-    return arr.map(x => x.trim()).filter(Boolean);
-  }
-  // 画像srcを決定（空→null, data:URL, http/https, それ以外は images/プレーン名）
-  function resolveImageSrc(v){
-    if (!v) return null;
-    const s = v.toString().trim();
-    if (!s) return null;
-    const lower = s.toLowerCase();
-    if (lower.startsWith('data:image/')) return s;          // Base64
-    if (lower.startsWith('http://') || lower.startsWith('https://')) return s; // URL
-    // ファイル名とみなす（images/ 配下）
-    return 'images/' + s;
-  }
-  function setImage(imgEl, srcVal){
-    if (!srcVal){ hideImage(imgEl); return; }
-    imgEl.onload = () => { imgEl.style.display = 'block'; };
-    imgEl.onerror = () => { hideImage(imgEl); };
-    imgEl.src = srcVal;
-  }
-  function hideImage(imgEl){
-    imgEl.removeAttribute('src');
-    imgEl.style.display = 'none';
-  }
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [arr[i],arr[j]] = [arr[j],arr[i]];
-    }
-    return arr;
-  }
-  function choiceBadge(idx){ return `<span class="badge">${badgeLetters[idx] ?? '?'}</span>`; }
+  // "a" / "A." / "（b）" などを a に
+  const m = s.toLowerCase().match(/[a-z]/);
+  return m ? m[0] : null;
+}
 
-  // ===== 状態 =====
-  let bank = [];             // 全問題
-  let pool = [];             // 出題プール（未正解のみからランダム）
-  let current = null;        // 現在の問題
-  let answeredIds = new Set(JSON.parse(localStorage.getItem('rccm_done_ids') || '[]')); // 正解済みID
+function splitChoices(raw){
+  if(raw == null) return [];
+  let s = String(raw).trim();
 
-  function persistDone(){
-    localStorage.setItem('rccm_done_ids', JSON.stringify([...answeredIds]));
-    document.getElementById('doneCount').textContent = answeredIds.size;
-  }
-
-  // 問題レコードからユニークID（年-番号）を作成
-  function qid(row){
-    const y = (row.yearDisplay || row.year || '').toString().trim();
-    const n = (row.number || '').toString().trim();
-    return `${y}#${n}`;
-  }
-
-  // ===== 表示 =====
-  function renderQuestion(q){
-    current = q;
-
-    // メタ
-    document.getElementById('metaYear').textContent = (q.yearDisplay || q.year || '').toString().trim() || '年度';
-    document.getElementById('metaNo').textContent = q.number ? `No.${q.number}` : 'No.-';
-    document.getElementById('status').className = 'status hidden';
-    document.getElementById('explain').className = 'explain hidden';
-    document.getElementById('explain').textContent = '';
-
-    // 本文
-    document.getElementById('qText').textContent = (q.question || '').toString().trim();
-
-    // 画像
-    const imgEl = document.getElementById('qImage');
-    const src = resolveImageSrc(q.image_placeholder);
-    setImage(imgEl, src);
-
-    // 選択肢
-    const holder = document.getElementById('choices');
-    holder.innerHTML = '';
-    const rawChoices = splitChoices(q.choices);
-    // a,b,c,d…の順に整形（CSV内で頭に「a.」「b)」など付与されていてもOK）
-    const data = rawChoices.map((t, i) => {
-      const key = normalizeKey(t);
-      // 先頭キーと本文を分離（例: "a) 〇〇" -> "〇〇"）
-      const text = t.replace(/^[a-dＡ-Ｄａ-ｄ][\.)．、\s]*/i,'').trim();
-      return {key: badgeLetters[i] || key, label: badgeLetters[i] || key, text};
-    });
-
-    // 正解キーを正規化
-    const correctKey = normalizeKey(q.correct);
-
-    data.forEach((c,idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'choice';
-      btn.innerHTML = `${choiceBadge(idx)}<div>${c.text}</div>`;
-      btn.addEventListener('click', () => checkAnswer(badgeLetters[idx], correctKey, q));
-      holder.appendChild(btn);
-    });
-  }
-
-  function checkAnswer(selectedKey, correctKey, q){
-    const status = document.getElementById('status');
-    const explain = document.getElementById('explain');
-
-    if (normalizeKey(selectedKey) === correctKey){
-      status.className = 'status ok';
-      status.textContent = '正解！';
-      explain.className = 'explain';
-      explain.textContent = (q.explanation || '').toString().trim();
-      // 正解済み登録
-      answeredIds.add(qid(q));
-      persistDone();
-      // 次回から再出題しないようプールから除去
-      pool = pool.filter(it => qid(it) !== qid(q));
-    }else{
-      status.className = 'status ng';
-      // 正解表示はCSVのcorrect列をそのままNFKC化＋英小文字化して a/b/c/d に揃える
-      const shown = correctKey;
-      status.textContent = `不正解　正解は ${shown}`;
-      explain.className = 'explain';
-      explain.textContent = (q.explanation || '').toString().trim();
+  // 画像のbase64やURLに含まれる"|"を誤爆しないように一旦候補を試す
+  const delims = ['||','｜｜','|'];
+  let parts = [s];
+  for(const d of delims){
+    if(s.includes(d)){
+      parts = s.split(d);
+      break;
     }
   }
-
-  function nextQuestion(){
-    // 出題プール: 未正解 only
-    const candidates = pool.length ? pool : bank.filter(r => !answeredIds.has(qid(r)));
-    if (!candidates.length){
-      // すべて正解済み→一旦全問題から再構築（ただし仕様で「リセットまで再出題しない」なのでここでは終了案内）
-      document.getElementById('qText').textContent = 'すべて正解済みです。下の「正解履歴リセット」で再開できます。';
-      hideImage(document.getElementById('qImage'));
-      document.getElementById('choices').innerHTML = '';
-      document.getElementById('status').className = 'status hidden';
-      document.getElementById('explain').className = 'explain hidden';
-      return;
-    }
-    // ランダム1問（「アプリを開いたときに同じ問題が出ないように」→ページ読み込み時にシャッフル済＋毎回乱択）
-    const q = candidates[Math.floor(Math.random()*candidates.length)];
-    renderQuestion(q);
+  // 前後トリム & 空要素除去
+  parts = parts.map(t=>t.trim()).filter(t=>t.length>0);
+  return parts;
+}
+function decodeImageSrc(v){
+  if(!v) return null;
+  const s = String(v).trim();
+  if(!s || s === '-' || s === 'NA' || s.toLowerCase()==='null') return null;
+  if(/^data:image\//i.test(s)) return s;               // data:image/png;base64,...
+  if(/^https?:\/\//i.test(s)) return s;               // URL
+  // それ以外は「ベアbase64」とみなしてPNGを仮定
+  // 先頭が長い英数+/=のみならOK
+  if(/^[A-Za-z0-9+/=\s]+$/.test(s) && s.length>40){
+    return 'data:image/png;base64,'+s.replace(/\s+/g,'');
   }
+  // 画像なし
+  return null;
+}
 
-  function resetDone(){
-    answeredIds.clear();
-    persistDone();
-    // プールを未正解で再構築
-    pool = bank.slice();
-    nextQuestion();
-  }
-
-  // ===== CSVロード =====
-  async function loadCSV(){
-    // キャッシュを避ける（GitHub Pagesで更新が反映されないのを防ぐ）
-    const url = `${CSV_PATH}?t=${Date.now()}`;
-    const res = await fetch(url, {cache:'no-store'});
-    if (!res.ok) throw new Error('CSVの取得に失敗しました');
-    const text = await res.text();
-
-    // BOM除去
-    const clean = text.replace(/^\uFEFF/,'');
-    return new Promise((resolve,reject)=>{
-      Papa.parse(clean, {
-        header:true,
-        skipEmptyLines:true,
-        transformHeader: h => h.trim(),
-        complete: r => resolve(r.data),
-        error: err => reject(err)
-      });
-    });
-  }
-
-  // ===== 起動 =====
-  window.addEventListener('load', async () => {
-    document.getElementById('doneCount').textContent = answeredIds.size;
-
-    document.getElementById('nextBtn').addEventListener('click', nextQuestion, {passive:true});
-    document.getElementById('resetBtn').addEventListener('click', resetDone, {passive:true});
-
-    try{
-      const rows = await loadCSV();
-
-      // 必須列ガード（year/number/question/choices/correct は最低限）
-      const needCols = ['year','yearDisplay','number','question','image_placeholder','choices','correct','explanation'];
-      const miss = needCols.filter(c => !(c in rows[0]));
-      if (miss.length){
-        console.warn('見つからない列:', miss);
+/* ========= 簡易CSVパーサ（RFC4180準拠の範囲） ========= */
+function parseCSV(text){
+  // BOM 除去
+  if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = [];
+  let i=0, field='', row=[], inQ=false;
+  while(i<text.length){
+    const c = text[i];
+    if(inQ){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field+='"'; i+=2; continue; }
+        inQ = false; i++; continue;
       }
-
-      // クリーンアップ＆正規化
-      bank = rows.map(r => ({
-        year: (r.year ?? '').toString().trim(),
-        yearDisplay: (r.yearDisplay ?? '').toString().trim(),
-        number: (r.number ?? '').toString().trim(),
-        question: (r.question ?? '').toString(),
-        image_placeholder: (r.image_placeholder ?? '').toString().trim(),
-        choices: (r.choices ?? '').toString(),
-        correct: nfkcLower(r.correct ?? ''), // ここで正規化
-        explanation: (r.explanation ?? '').toString()
-      })).filter(r => r.question && r.choices && r.correct);
-
-      // 初期プール（未正解のみ）
-      pool = bank.filter(r => !answeredIds.has(qid(r)));
-      // 乱順にしておく（「開いたときに同じ問題が出ない」）
-      shuffle(pool);
-
-      nextQuestion();
-    }catch(err){
-      document.getElementById('qText').textContent = '読み込みに失敗しました。CSVの配置やエンコード(UTF-8)をご確認ください。';
-      console.error(err);
+      field += c; i++; continue;
+    }else{
+      if(c === '"'){ inQ = true; i++; continue; }
+      if(c === ','){ row.push(field); field=''; i++; continue; }
+      if(c === '\r'){ i++; continue; }
+      if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; i++; continue; }
+      field += c; i++; continue;
     }
+  }
+  row.push(field); rows.push(row);
+  // ヘッダ
+  const header = rows.shift().map(h=>String(h).trim());
+  return rows.filter(r=>r.some(x=>String(x).trim().length>0)).map(r=>{
+    const obj={};
+    header.forEach((h,idx)=>{ obj[h]= r[idx] ?? '' });
+    return obj;
   });
-  </script>
+}
+
+/* ========= 状態 ========= */
+let ALL = [];
+let solvedSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+let lastIndex = -1; // 直前のインデックス（連続重複防止）
+
+/* ========= UI要素 ========= */
+const yrEl = document.getElementById('yr');
+const numEl = document.getElementById('num');
+const idxText = document.getElementById('idxText');
+const qText = document.getElementById('qText');
+const imgSlot = document.getElementById('imgSlot');
+const choicesBox = document.getElementById('choices');
+const explainEl = document.getElementById('explain');
+const errorMsg = document.getElementById('errorMsg');
+const clearedEl = document.getElementById('cleared');
+const nextBtn = document.getElementById('nextBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+/* ========= CSV読込 ========= */
+async function loadCSV(){
+  try{
+    // GitHub Pages 同階層
+    const res = await fetch('problems.csv', {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    let txt = await res.text();
+    const list = parseCSV(txt);
+
+    // 必須列チェック
+    const need = ['year','yearDisplay','number','question','image_placeholder','choices','correct','explanation'];
+    const lacks = need.filter(k => !(k in list[0]));
+    if(lacks.length){
+      throw new Error('CSVの列不足: ' + lacks.join(', '));
+    }
+
+    // 整形
+    ALL = list.map((r,idx)=>{
+      const id = `${String(r.year||'').trim()}-${String(r.number||idx+1).trim()}`;
+      return {
+        id,
+        year: String(r.year||'').trim(),
+        yearDisplay: String(r.yearDisplay||'').trim(),
+        number: String(r.number||'').trim(),
+        question: String(r.question||'').trim(),
+        image: decodeImageSrc(r.image_placeholder),
+        choices: splitChoices(r.choices),
+        correct: normalizeCorrect(r.correct),
+        explanation: String(r.explanation||'').trim()
+      };
+    }).filter(q => q.question && q.choices.length > 0 && q.correct);
+
+    if(ALL.length === 0) throw new Error('有効な問題行がありません。');
+
+    renderCleared();
+    pickAndRender();
+  }catch(err){
+    showError('読み込みに失敗しました。CSVの配置やエンコード(UTF-8)をご確認ください。');
+    console.error(err);
+    qText.textContent = '読み込みに失敗しました。CSVの配置やエンコード(UTF-8)をご確認ください。';
+  }
+}
+
+function showError(msg){
+  errorMsg.textContent = msg;
+  errorMsg.classList.remove('hidden');
+}
+function hideError(){ errorMsg.classList.add('hidden'); errorMsg.textContent=''; }
+
+/* ========= 出題 & 表示 ========= */
+function unsolvedPool(){
+  const pool = ALL.filter(q => !solvedSet.has(q.id));
+  return pool.length ? pool : ALL.slice(); // すべて正解済なら全体から出す（ただし直前重複は回避）
+}
+function pickRandom(){
+  const pool = unsolvedPool();
+  if(pool.length === 0) return null;
+  // 直前と同一を避ける
+  let idx = Math.floor(Math.random()*pool.length);
+  let tries = 0;
+  while(pool.length>1 && idx === lastIndex && tries<5){
+    idx = Math.floor(Math.random()*pool.length); tries++;
+  }
+  lastIndex = idx;
+  return pool[idx];
+}
+
+function renderCleared(){
+  clearedEl.textContent = String(solvedSet.size);
+}
+
+let current = null;
+let locked = false;
+
+function renderQuestion(q){
+  current = q;
+  locked = false;
+  hideError();
+  explainEl.style.display = 'none';
+  explainEl.textContent = '';
+
+  yrEl.textContent = q.yearDisplay || q.year || '-';
+  numEl.textContent = q.number || '-';
+  idxText.textContent = '';
+  qText.textContent = q.question;
+
+  // 画像
+  imgSlot.innerHTML = '';
+  if(q.image){
+    const img = new Image();
+    img.alt = '問題図';
+    img.decoding = 'async';
+    img.loading = 'lazy';
+    img.src = q.image;
+    imgSlot.appendChild(img);
+    imgSlot.classList.remove('hidden');
+  }else{
+    imgSlot.classList.add('hidden');
+  }
+
+  // 選択肢
+  choicesBox.innerHTML = '';
+  q.choices.forEach((t, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    const label = CHOICE_PREFIX[i] ? CHOICE_PREFIX[i]+'. ' : '';
+    btn.innerHTML = `<span>${label}${escapeHTML(t)}</span>`;
+    btn.addEventListener('click', ()=> onChoice(i, btn));
+    choicesBox.appendChild(btn);
+  });
+}
+
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function onChoice(index, btnEl){
+  if(locked || !current) return;
+  locked = true;
+
+  const chosenKey = CHOICE_PREFIX[index];
+  const isCorrect = chosenKey === current.correct;
+
+  // 全ボタンの見た目更新
+  const nodes = [...choicesBox.children];
+  nodes.forEach((n, i)=>{
+    const key = CHOICE_PREFIX[i];
+    if(key === current.correct) n.classList.add('correct');
+    if(i === index && !isCorrect) n.classList.add('wrong');
+    n.style.pointerEvents = 'none';
+  });
+
+  // 解説
+  const prefix = isCorrect ? '正解！' : `不正解　正解は ${current.correct}`;
+  explainEl.textContent = `${prefix}　` + (current.explanation || '');
+  explainEl.style.display = 'block';
+
+  if(isCorrect){
+    // 正解済みに登録（重複追加はSetが防止）
+    solvedSet.add(current.id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...solvedSet]));
+    renderCleared();
+  }
+}
+
+/* ========= 次の問題 ========= */
+function pickAndRender(){
+  const q = pickRandom();
+  if(!q){
+    showError('問題がありません。CSVをご確認ください。');
+    return;
+  }
+  renderQuestion(q);
+}
+
+/* ========= リセット ========= */
+function resetSolved(){
+  solvedSet = new Set();
+  localStorage.setItem(STORAGE_KEY, '[]');
+  renderCleared();
+}
+
+/* ========= イベント ========= */
+nextBtn.addEventListener('click', pickAndRender);
+resetBtn.addEventListener('click', ()=>{
+  if(confirm('正解履歴をリセットしますか？')){
+    resetSolved();
+    pickAndRender();
+  }
+});
+
+/* ========= 起動 ========= */
+loadCSV();
+</script>
 </body>
 </html>
-
