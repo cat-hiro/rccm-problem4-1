@@ -2,55 +2,59 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
-  />
-  <title>択一問題アプリ</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"/>
+  <title>RCCM 問題4-2</title>
   <style>
     :root {
-      --bg: #0b0c10;
-      --card: #111317;
-      --muted: #aeb4bf;
-      --fg: #ffffff;
-      --accent: #4f8cff;
-      --ok: #35c759;
-      --ng: #ff3b30;
-      --border: #1d222b;
-      --shadow: 0 10px 20px rgba(0,0,0,.35);
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --muted: #555;
+      --fg: #222;
+      --accent: #1976d2;
+      --ok: #2e7d32;
+      --ng: #c62828;
+      --border: #ddd;
+      --shadow: 0 4px 12px rgba(0,0,0,.1);
       --pad: 16px;
-      --radius: 16px;
+      --radius: 12px;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
-      margin: 0; background: var(--bg); color: var(--fg);
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
                    "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", Arial, sans-serif;
       line-height: 1.6;
     }
     .wrap {
-      min-height: 100svh; /* iOS 16+ */
-      padding-bottom: calc(88px + env(safe-area-inset-bottom)); /* bottom bar space */
+      min-height: 100svh;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
       display: grid;
       grid-template-rows: auto 1fr;
       gap: 12px;
     }
     header {
-      position: sticky; top: 0; z-index: 1;
-      background: linear-gradient(to bottom, rgba(11,12,16,0.9), rgba(11,12,16,0.6) 60%, transparent);
-      backdrop-filter: blur(4px);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--accent);
+      color: #fff;
       padding: calc(var(--pad) + env(safe-area-inset-top)) var(--pad) var(--pad);
+      box-shadow: var(--shadow);
     }
     h1 {
       margin: 0;
-      text-align: center;             /* タイトル中央揃え */
-      font-size: 22px; font-weight: 700;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
       letter-spacing: .02em;
     }
 
     main {
       padding: 0 var(--pad) 24px;
-      max-width: 980px; width: 100%;
+      max-width: 980px;
+      width: 100%;
       margin: 0 auto;
     }
     .card {
@@ -61,43 +65,57 @@
       padding: 18px;
     }
     .meta {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      color: var(--muted); font-size: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
       margin-bottom: 8px;
     }
     .q {
-      font-size: 18px; font-weight: 600; margin: 6px 0 14px;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 6px 0 14px;
       word-break: break-word;
     }
-    .imgph {
-      display: none; /* 必要なら画像表示に切替 */
-    }
-
     .choices {
-      display: grid; gap: 10px;
+      display: grid;
+      gap: 10px;
     }
     .choice {
       width: 100%;
-      background: #151922;
+      background: #f9f9f9;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 12px;
-      text-align: left;               /* 選択肢 左揃え */
+      border-radius: 8px;
+      padding: 12px 10px;
+      text-align: left;
       font-size: 16px;
       cursor: pointer;
-      transition: transform .02s ease, border-color .15s ease, background .15s ease;
+      transition: background .15s ease, border-color .15s ease;
     }
-    .choice:active { transform: scale(.995); }
-    .choice.disabled { opacity: .6; pointer-events: none; }
-    .choice.ok { border-color: color-mix(in oklab, var(--ok) 60%, #1b1f27); background: #0f1a13; }
-    .choice.ng { border-color: color-mix(in oklab, var(--ng) 60%, #1b1f27); background: #1c1111; }
+    .choice:hover {
+      background: #f1f7ff;
+      border-color: var(--accent);
+    }
+    .choice.disabled {
+      opacity: .6;
+      pointer-events: none;
+    }
+    .choice.ok {
+      border-color: var(--ok);
+      background: #e8f5e9;
+    }
+    .choice.ng {
+      border-color: var(--ng);
+      background: #ffebee;
+    }
 
     .feedback {
       margin-top: 12px;
       padding: 12px;
-      border-radius: 12px;
+      border-radius: 8px;
       border: 1px solid var(--border);
-      background: #12151c;
+      background: #f5f5f5;
       font-size: 15px;
       white-space: pre-wrap;
     }
@@ -105,24 +123,37 @@
     .feedback .bad  { color: var(--ng); font-weight: 700; }
 
     .toolbar {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 3;
       padding: 10px calc(var(--pad)) calc(10px + env(safe-area-inset-bottom));
-      background: rgba(10,12,16,.8);
-      backdrop-filter: blur(8px);
+      background: #fff;
       border-top: 1px solid var(--border);
+      box-shadow: var(--shadow);
     }
     .tb-inner {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 980px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      max-width: 980px;
+      margin: 0 auto;
     }
     .btn {
-      appearance: none; cursor: pointer;
-      border-radius: 14px; padding: 14px 16px; font-size: 16px; font-weight: 700;
-      border: 1px solid #2a3342; background: #171c25; color: var(--fg);
-      transition: transform .02s ease, background .15s ease, border-color .15s ease;
+      appearance: none;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      color: white;
+      transition: transform .02s ease, opacity .15s ease;
     }
-    .btn:active { transform: scale(.995); }
-    .btn.primary { background: linear-gradient(180deg, #4f8cff, #3c6fe0); border-color: #3a66d2; color: white; }
-    .btn.danger  { background: linear-gradient(180deg, #ff5959, #e44848); border-color: #cf3c3c; color: white; }
+    .btn:active { transform: scale(.98); }
+    .btn.primary { background: var(--accent); }
+    .btn.danger  { background: var(--ng); }
     .btn:disabled { opacity: .6; cursor: not-allowed; }
 
     .muted { color: var(--muted); font-size: 12px; }
@@ -131,14 +162,13 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>択一問題アプリ</h1>
+      <h1>RCCM 問題4-2</h1>
     </header>
 
     <main>
-      <div class="card" id="card" aria-live="polite">
+      <div class="card" id="card">
         <div class="meta" id="meta"></div>
         <div class="q" id="question">読み込み中…</div>
-        <img id="img" class="imgph" alt="">
         <div class="choices" id="choices"></div>
         <div class="feedback" id="feedback" hidden></div>
       </div>
@@ -149,269 +179,131 @@
       </div>
     </main>
 
-    <!-- 下部ボタンは固定 -->
     <div class="toolbar">
       <div class="tb-inner">
         <button id="nextBtn" class="btn primary" disabled>次の問題</button>
-        <button id="resetBtn" class="btn danger">リセット（正解履歴クリア）</button>
+        <button id="resetBtn" class="btn danger">リセット</button>
       </div>
     </div>
   </div>
 
   <script>
-    // ====== 設定 ======
-    const CSV_FILE = 'mondai4-1.csv'; // ← CSV はこの ASCII 名で同じフォルダに置く
-    const STORAGE_KEY_DONE = 'quiz_done_ids_v1'; // 正解済み（再出題しない）
-    const STORAGE_KEY_SHUFFLE_SEED = 'quiz_shuffle_seed_v1'; // 同時刻でも並びが変わるようシード管理
+    const CSV_FILE = 'mondai4-1.csv';
+    const STORAGE_KEY_DONE = 'quiz_done_ids_v1';
+    const STORAGE_KEY_SHUFFLE_SEED = 'quiz_shuffle_seed_v1';
+    const letterFromIndex = i => String.fromCharCode(97 + i);
 
-    // ====== ユーティリティ ======
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-    const letterFromIndex = i => String.fromCharCode(97 + i); // 0->a,1->b,...
-
-    // 配列シャッフル（シード付き：アプリ起動ごとに変わる）
     function mulberry32(a){return function(){var t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
-    function seededShuffle(arr, seed){
-      const rng = mulberry32(seed);
-      const a = arr.slice();
-      for(let i=a.length-1;i>0;i--){
-        const j = Math.floor(rng()* (i+1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
+    function seededShuffle(arr, seed){const rng=mulberry32(seed);const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-    // ====== CSV 読み込み（UTF-8/Shift_JIS 自動判別） ======
-    async function fetchCSVSmart(path){
+    async function fetchCSV(path){
       const res = await fetch(path, { cache: 'no-store' });
-      if(!res.ok) throw new Error('CSV を取得できませんでした: ' + res.status);
       const buf = await res.arrayBuffer();
-      const bytes = new Uint8Array(buf);
-
-      // BOM で UTF-8 判定
-      const hasUTF8BOM = bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF;
-
-      // まず UTF-8 で試す
-      let decoded = new TextDecoder('utf-8', { fatal: false }).decode(bytes);
-      const suspicious = decoded.includes('\uFFFD'); // 置換文字
-      // ひらがな/カタカナ/漢字少なすぎ・?や�が多い等なら SJIS を試す
-      const jpChars = (decoded.match(/[\u3040-\u30FF\u4E00-\u9FFF]/g) || []).length;
-      const badChars = (decoded.match(/[\uFFFD]/g) || []).length;
-
-      if(!hasUTF8BOM && (suspicious || badChars > 0 || jpChars < 5)){
-        try{
-          decoded = new TextDecoder('shift_jis', { fatal: false }).decode(bytes);
-        }catch(_){
-          // 一部ブラウザで label 名が違う場合
-          try { decoded = new TextDecoder('ms932', { fatal:false }).decode(bytes); } catch(e){}
-        }
-      }
-      return decoded;
+      const txt = new TextDecoder('utf-8').decode(buf);
+      return txt;
     }
-
-    // ====== 簡易 CSV パーサー（カンマ・改行のクォート対応） ======
     function parseCSV(text){
       const rows = [];
       let i=0, field='', row=[], inQuotes=false;
       while(i < text.length){
         const c = text[i];
         if(inQuotes){
-          if(c === '"'){
-            if(text[i+1] === '"'){ field += '"'; i++; }
-            else { inQuotes = false; }
-          }else{
-            field += c;
-          }
+          if(c === '"'){if(text[i+1] === '"'){ field += '"'; i++; } else { inQuotes = false; }}
+          else{ field += c; }
         }else{
           if(c === '"'){ inQuotes = true; }
           else if(c === ','){ row.push(field); field=''; }
-          else if(c === '\n'){
-            row.push(field); rows.push(row); field=''; row=[];
-          }else if(c === '\r'){ /* skip */ }
-          else { field += c; }
+          else if(c === '\n'){ row.push(field); rows.push(row); field=''; row=[]; }
+          else if(c !== '\r'){ field += c; }
         }
         i++;
       }
-      // last field
       if(field.length>0 || row.length>0) { row.push(field); rows.push(row); }
       return rows;
     }
-
     function csvToObjects(text){
       const rows = parseCSV(text);
-      const header = rows.shift().map(h => h.trim());
-      return rows.filter(r => r.length && r.some(x => x.trim() !== ''))
-        .map(r => {
-          const obj = {};
-          header.forEach((h, idx)=> obj[h] = r[idx] ?? '');
-          return obj;
-        });
+      const header = rows.shift();
+      return rows.map(r => {
+        const obj = {};
+        header.forEach((h, idx)=> obj[h] = r[idx] ?? '');
+        return obj;
+      });
     }
 
-    // ====== アプリ状態 ======
-    let allItems = [];          // 全問題
-    let pool = [];              // 出題候補（正解済みを除く）
-    let current = null;         // 現在の問題
-    let currentIdx = -1;
-    let answered = false;
-
+    let allItems = [];
+    let current = null;
     const els = {
       meta: document.getElementById('meta'),
       question: document.getElementById('question'),
-      img: document.getElementById('img'),
       choices: document.getElementById('choices'),
       feedback: document.getElementById('feedback'),
       nextBtn: document.getElementById('nextBtn'),
-      resetBtn: document.getElementById('resetBtn'),
+      resetBtn: document.getElementById('resetBtn')
     };
+    function getDoneSet(){return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY_DONE) || '[]'));}
+    function addDone(id){const s=getDoneSet();s.add(String(id));localStorage.setItem(STORAGE_KEY_DONE,JSON.stringify([...s]));}
+    function clearDone(){localStorage.removeItem(STORAGE_KEY_DONE);}
+    function newSeed(){const seed=Math.floor(Math.random()*0xffffffff)^Date.now();localStorage.setItem(STORAGE_KEY_SHUFFLE_SEED,String(seed>>>0));return seed>>>0;}
+    function getSeed(){const v=localStorage.getItem(STORAGE_KEY_SHUFFLE_SEED);return v?Number(v)>>>0:newSeed();}
 
-    function getDoneSet(){
-      try{
-        return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY_DONE) || '[]'));
-      }catch{ return new Set(); }
-    }
-    function addDone(id){
-      const s = getDoneSet();
-      s.add(String(id));
-      localStorage.setItem(STORAGE_KEY_DONE, JSON.stringify(Array.from(s)));
-    }
-    function clearDone(){
-      localStorage.removeItem(STORAGE_KEY_DONE);
-    }
-
-    function newShuffleSeed(){
-      const seed = Math.floor(Math.random()*0xffffffff) ^ Date.now();
-      localStorage.setItem(STORAGE_KEY_SHUFFLE_SEED, String(seed>>>0));
-      return seed>>>0;
-    }
-    function getShuffleSeed(){
-      const v = localStorage.getItem(STORAGE_KEY_SHUFFLE_SEED);
-      if(v) return Number(v)>>>0;
-      return newShuffleSeed();
-    }
-
-    // ====== UI ======
     function renderQuestion(item){
       els.meta.textContent = `No.${item.number} / ${item.yearDisplay || item.year || ''}`;
       els.question.textContent = item.question;
-      if(item.image_placeholder){
-        els.img.src = item.image_placeholder;
-        els.img.style.display = 'block';
-      }else{
-        els.img.style.display = 'none';
-      }
-
       els.choices.innerHTML = '';
-      const choices = item._choices; // 配列
-      choices.forEach((t, i)=>{
-        const b = document.createElement('button');
-        b.className = 'choice';
-        b.dataset.idx = String(i);
-        b.innerHTML = `<strong>${letterFromIndex(i)}.</strong> ${escapeHtml(t)}`;
-        b.addEventListener('click', () => onAnswer(i));
+      item._choices.forEach((t,i)=>{
+        const b=document.createElement('button');
+        b.className='choice';
+        b.innerHTML=`<strong>${letterFromIndex(i)}.</strong> ${t}`;
+        b.onclick=()=>onAnswer(i);
         els.choices.appendChild(b);
       });
-
       els.feedback.hidden = true;
-      els.feedback.textContent = '';
       els.nextBtn.disabled = true;
-      answered = false;
     }
-
     function onAnswer(i){
-      if(answered || !current) return;
-      answered = true;
-
-      const correct = Number(current.correct); // 0-based
-      const nodes = [...document.querySelectorAll('.choice')];
-      nodes.forEach(n => n.classList.add('disabled'));
+      const correct = Number(current.correct);
+      const buttons = els.choices.querySelectorAll('.choice');
+      buttons.forEach(b => b.classList.add('disabled'));
       if(i === correct){
-        nodes[i].classList.add('ok');
-        els.feedback.innerHTML = `<span class="good">正解！</span>\n${escapeHtml(current.explanation || '')}`;
+        buttons[i].classList.add('ok');
+        els.feedback.innerHTML=`<span class="good">正解！</span>\n${current.explanation}`;
         addDone(current._id);
       }else{
-        nodes[i].classList.add('ng');
-        const corr = nodes[correct];
-        if(corr) corr.classList.add('ok');
-        const ansLetter = letterFromIndex(correct);
-        els.feedback.innerHTML =
-          `<span class="bad">不正解　正解は ${ansLetter}</span>\n${escapeHtml(current.explanation || '')}`;
+        buttons[i].classList.add('ng');
+        buttons[correct].classList.add('ok');
+        els.feedback.innerHTML=`<span class="bad">不正解　正解は ${letterFromIndex(correct)}</span>\n${current.explanation}`;
       }
       els.feedback.hidden = false;
       els.nextBtn.disabled = false;
     }
-
-    function escapeHtml(s=''){
-      return s.replace(/[&<>"']/g, ch => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-      }[ch]));
-    }
-
     function nextQuestion(){
-      // プールからランダム 1 問（起動ごとに異なる並び）
-      const done = getDoneSet();
-      pool = allItems.filter(x => !done.has(String(x._id)));
-      if(pool.length === 0){
-        // すべて正解済み
-        els.meta.textContent = '';
-        els.question.textContent = 'すべて正解済みです。リセットすると再挑戦できます。';
-        els.choices.innerHTML = '';
-        els.feedback.hidden = true;
-        els.nextBtn.disabled = true;
+      const done=getDoneSet();
+      const pool=allItems.filter(x=>!done.has(String(x._id)));
+      if(pool.length===0){
+        els.question.textContent='全問正解済みです。リセットしてください。';
+        els.choices.innerHTML='';
+        els.feedback.hidden=true;
+        els.nextBtn.disabled=true;
         return;
       }
-      const seed = getShuffleSeed();
-      const shuffled = seededShuffle(pool, seed ^ (Date.now() & 0xffff));
-      current = shuffled[0];
-      currentIdx = allItems.findIndex(x => x._id === current._id);
+      const seed=getSeed();
+      const shuffled=seededShuffle(pool,seed ^ (Date.now() & 0xffff));
+      current=shuffled[0];
       renderQuestion(current);
     }
 
-    // ====== 初期化 ======
     async function init(){
-      try{
-        const text = await fetchCSVSmart(CSV_FILE);
-        const rows = csvToObjects(text);
-
-        // 期待する列:
-        // year, yearDisplay, number, question, image_placeholder, choices(JSON配列文字列), correct(0-based), explanation
-        allItems = rows.map((r, idx) => {
-          let choicesArr = [];
-          try{
-            // choices 列は JSON 文字列（["a","b",..."]）前提
-            choicesArr = JSON.parse(r.choices);
-            if(!Array.isArray(choicesArr)) choicesArr = [];
-          }catch{ choicesArr = []; }
-          return {
-            _id: r.number || String(idx), // 正解履歴キー
-            year: r.year || '',
-            yearDisplay: r.yearDisplay || '',
-            number: r.number || (idx+1),
-            question: r.question || '',
-            image_placeholder: r.image_placeholder || '',
-            _choices: choicesArr,
-            correct: isFinite(r.correct) ? Number(r.correct) : 0, // 0-based index
-            explanation: r.explanation || ''
-          };
-        }).filter(x => x._choices.length > 0);
-
-        // 最初の 1 問
-        nextQuestion();
-
-        // イベント
-        els.nextBtn.addEventListener('click', nextQuestion);
-        els.resetBtn.addEventListener('click', ()=>{
-          if(confirm('正解済みの記録を消去します。よろしいですか？')){
-            clearDone();
-            newShuffleSeed(); // 並びも更新
-            nextQuestion();
-          }
-        });
-      }catch(e){
-        console.error(e);
-        els.question.textContent = '読み込みに失敗しました。CSV の配置名や文字コードをご確認ください。';
-      }
+      const text=await fetchCSV(CSV_FILE);
+      const rows=csvToObjects(text);
+      allItems=rows.map((r,idx)=>{
+        let ch=[];try{ch=JSON.parse(r.choices);}catch{}
+        return {...r,_id:r.number||idx,_choices:ch,correct:Number(r.correct)};
+      });
+      nextQuestion();
+      els.nextBtn.onclick=nextQuestion;
+      els.resetBtn.onclick=()=>{if(confirm('リセットしますか？')){clearDone();newSeed();nextQuestion();}};
     }
-
     init();
   </script>
 </body>
