@@ -24,16 +24,17 @@
     .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
     .year-no{display:flex;gap:8px;color:var(--muted);font-size:.95rem;align-items:center;margin-bottom:8px}
     .question{font-size:clamp(16px,3.8vw,20px);line-height:1.7;margin:8px 0 12px}
+
     .imgwrap{display:flex;justify-content:center;margin:10px 0}
+    .imgwrap[hidden]{display:none !important;} /* ← 隠すときは完全に消す */
     .imgwrap img{
       max-width:100%;
-      max-height:68vh;
+      max-height:68vh;   /* 画面の約2/3に収める */
       height:auto;
-      object-fit:contain;
-      display:block;
+      object-fit:contain; /* はみ出さず全体表示 */
+      display:none;       /* 読み込み成功時に block にする */
       border-radius:12px;
       border:1px solid var(--border);
-      background:#f6f9ff;
     }
 
     .choices{display:grid;gap:10px}
@@ -56,7 +57,6 @@
     .btn-primary{background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:#2563eb;color:white}
     .btn-ghost{background:transparent}
 
-    /* iPhone 大画面向けの読みやすさ */
     @media (min-width:430px){
       .container{padding:18px}
       .choice{padding:16px}
@@ -77,7 +77,9 @@
         <div id="card" class="card" hidden>
           <div class="year-no" id="meta"></div>
           <div class="question" id="q"></div>
-          <div class="imgwrap" id="imgwrap" hidden><img id="qimg" alt=""/></div>
+          <div class="imgwrap" id="imgwrap" hidden>
+            <img id="qimg" alt=""/>
+          </div>
           <div class="choices" id="choices"></div>
           <div class="result" id="result"></div>
           <div class="explain" id="explain"></div>
@@ -94,7 +96,8 @@
       </div>
     </footer>
   </div>
-  <!-- データチャンク（問題データ本体） -->
+
+  <!-- データチャンク（問題データ本体を4分割で読み込み） -->
   <script src="problems_chunk1_of4.js"></script>
   <script src="problems_chunk2_of4.js"></script>
   <script src="problems_chunk3_of4.js"></script>
@@ -119,15 +122,30 @@
       const STORAGE_KEY = 'rccm_q_correct_ids_v1';
       const LETTERS = ['a','b','c','d','e','f'];
 
-      // 画像ソース正規化（空/不正は ''、data:image/*;base64, を png に丸める）
+      // 画像ソースを正規化（空/不正は '' に）
       function sanitizeImageSrc(raw){
         if(raw == null) return '';
-        const s = String(raw).trim();
-        if(!s || s === 'null' || s === 'undefined' || s === 'NaN') return '';
-        if(/^data:image\/[^;]+;base64,/.test(s)){
-          return s.replace(/^data:image\/[^;]+;base64,/, 'data:image/png;base64,');
+        const s0 = String(raw).trim();
+        if(!s0 || s0 === 'null' || s0 === 'undefined' || s0 === 'NaN') return '';
+
+        // data URI? data:image/<token>;base64,<payload>
+        const m = s0.match(/^data:image\/([^;]+);base64,([\s\S]+)$/);
+        if(m){
+          const token = m[1].toLowerCase();              // 例: "jpeg", "png", "page2_img2.png" など
+          let payload = (m[2] || '').replace(/\s+/g,''); // 改行・空白を除去（iOS対策）
+          if(payload.length < 64) return '';             // やたら短いのは壊れているとみなす
+
+          let mime = 'image/png';
+          if(token.includes('jpg') || token.includes('jpeg')) mime = 'image/jpeg';
+          else if(token.includes('png')) mime = 'image/png';
+          else if(token.includes('gif')) mime = 'image/gif';
+          // それ以外は png 扱い
+
+          return `data:${mime};base64,${payload}`;
         }
-        return s; // URL/相対パスはそのまま
+
+        // 通常URL/相対パスはそのまま
+        return s0;
       }
 
       function loadProblems(){
@@ -155,13 +173,11 @@
       let ALL = loadProblems();
       let correctSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'));
 
-      function saveCorrect(){
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([...correctSet]));
-      }
+      function saveCorrect(){ localStorage.setItem(STORAGE_KEY, JSON.stringify([...correctSet])); }
 
       function pickRandom(){
         const pool = ALL.filter(q=>!correctSet.has(q.id));
-        if(pool.length === 0){ return null; }
+        if(pool.length === 0) return null;
         const idx = Math.floor(Math.random()*pool.length);
         return pool[idx];
       }
@@ -172,29 +188,36 @@
         if(!q){
           qEl.textContent = '出題可能な問題がありません。リセットしてください。';
           metaEl.textContent = '';
-          imgWrap.hidden = true; imgEl.removeAttribute('src');
+          imgWrap.hidden = true; imgEl.removeAttribute('src'); imgEl.style.display='none';
           choicesEl.innerHTML=''; resultEl.textContent=''; explainEl.textContent='';
           return;
         }
         metaEl.textContent = `${q.yearDisplay} / No.${q.number}`;
         qEl.textContent = q.question;
 
-        // 画像処理（正規化＋確実な非表示制御）
-        const src = sanitizeImageSrc(q.image);
-        imgEl.onload = ()=>{ imgWrap.hidden = false; };
+        // 画像：毎回確実に初期化 → 正規化して設定 → 成否で表示切替
+        imgWrap.hidden = true;
+        imgEl.style.display = 'none';
+        imgEl.onload = ()=>{ imgEl.style.display='block'; imgWrap.hidden=false; };
         imgEl.onerror = ()=>{
           imgEl.removeAttribute('src');
-          imgWrap.hidden = true; // 失敗時はブロックごと隠す
+          imgEl.style.display = 'none';
+          imgWrap.hidden = true;
         };
+
+        const src = sanitizeImageSrc(q.image);
         if(src){
           imgEl.src = src;
         }else{
           imgEl.removeAttribute('src');
+          imgEl.style.display = 'none';
           imgWrap.hidden = true;
         }
 
-        // 選択肢描画
-        choicesEl.innerHTML=''; resultEl.textContent=''; resultEl.className='result'; explainEl.textContent='';
+        // 選択肢
+        choicesEl.innerHTML='';
+        resultEl.textContent=''; resultEl.className='result';
+        explainEl.textContent='';
         q.choices.forEach((text,i)=>{
           const div = document.createElement('div');
           div.className = 'choice'; div.dataset.index = String(i);
@@ -206,6 +229,7 @@
           choicesEl.appendChild(div);
         });
       }
+
       function lockChoices(){
         choicesEl.querySelectorAll('.choice').forEach(el=>{
           el.classList.add('disabled');
@@ -220,28 +244,20 @@
         if(isCorrect){
           resultEl.textContent = '正解！';
           resultEl.className = 'result ok';
-          correctSet.add(current.id);
-          saveCorrect();
+          correctSet.add(current.id); saveCorrect();
         }else{
           const letter = (LETTERS[current.correct]||String(current.correct+1));
           resultEl.textContent = `不正解。正解は ${letter}`;
           resultEl.className = 'result bad';
         }
-        if(current.explanation){
-          explainEl.textContent = current.explanation;
-        }
+        if(current.explanation){ explainEl.textContent = current.explanation; }
       }
 
-      function nextQuestion(){
-        current = pickRandom();
-        render(current);
-      }
+      function nextQuestion(){ current = pickRandom(); render(current); }
 
       function resetProgress(){
         if(confirm('正解済みの記録をリセットしますか？')){
-          correctSet.clear();
-          saveCorrect();
-          nextQuestion();
+          correctSet.clear(); saveCorrect(); nextQuestion();
         }
       }
 
@@ -250,7 +266,7 @@
 
       function init(){
         if(!ALL || ALL.length===0){
-          loadingEl.textContent = 'データが未設定です。問題データを読み込んでください。';
+          loadingEl.textContent = 'データが未設定です。';
         }else{
           loadingEl.hidden = true; cardEl.hidden = false;
           nextQuestion();
