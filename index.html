@@ -6,105 +6,39 @@
 <title>RCCM 問題4-2</title>
 <style>
   :root{
-    --brand:#1976d2;
-    --brand-600:#1565c0;
-    --ok:#2e7d32;
-    --ng:#d32f2f;
-    --card:#ffffff;
-    --bg:#f5f7fb;
-    --text:#1d2630;
-    --muted:#5b6b7a;
-    --border:#e5e9f1;
-    --shadow:0 6px 18px rgba(24,39,75,0.12);
-    --radius:14px;
+    --brand:#1976d2; --brand-600:#1565c0;
+    --ok:#2e7d32; --ng:#d32f2f;
+    --card:#ffffff; --bg:#f5f7fb; --text:#1d2630; --muted:#5b6b7a; --border:#e5e9f1;
+    --shadow:0 6px 18px rgba(24,39,75,0.12); --radius:14px;
   }
   html,body{height:100%}
-  body{
-    margin:0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic UI","YuGothic","Meiryo", Arial, sans-serif;
-    background:var(--bg);
-    color:var(--text);
-  }
-
-  /* top bar */
-  .appbar{
-    position:sticky; top:0; z-index:5;
-    background:var(--brand);
-    color:#fff;
-    padding:14px 20px calc(env(safe-area-inset-top) + 14px);
-    box-shadow:var(--shadow);
-    text-align:center;
-    font-weight:700;
-    letter-spacing:.5px;
-  }
-
-  .wrap{max-width:980px; margin:24px auto 120px; padding:0 16px}
-  .card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:18px;
-  }
-  .meta{font-size:12px; color:var(--muted); margin-bottom:8px}
-
-  .qtext{
-    font-size:18px; line-height:1.7; margin:8px 0 14px;
-    word-break:break-word;
-  }
-
-  .opt{
-    display:block; width:100%;
-    text-align:left; /* ←選択肢は左揃え */
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:14px 16px;
-    margin:10px 0;
-    font-size:16px;
-    line-height:1.6;
-    cursor:pointer;
-    transition:transform .02s ease, border-color .15s ease, background .15s ease;
-  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+        "Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","YuGothic","Meiryo",Arial,sans-serif;
+        background:var(--bg); color:var(--text);}
+  .appbar{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;
+    padding:14px 20px calc(env(safe-area-inset-top) + 14px);box-shadow:var(--shadow);text-align:center;font-weight:700;}
+  .wrap{max-width:980px;margin:24px auto 120px;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .meta{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .qtext{font-size:18px;line-height:1.7;margin:8px 0 14px;word-break:break-word}
+  .qimg{display:block;max-width:100%;height:auto;border:1px solid var(--border);border-radius:10px;margin:10px 0 6px}
+  .opt{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:12px;
+    padding:14px 16px;margin:10px 0;font-size:16px;line-height:1.6;cursor:pointer;
+    transition:transform .02s ease,border-color .15s ease,background .15s ease}
   .opt:active{transform:scale(.998)}
-  .opt.correct{border-color:rgba(46,125,50,.4); background:rgba(76,175,80,.06)}
-  .opt.wrong{border-color:rgba(211,47,47,.4); background:rgba(244,67,54,.06)}
-  .opt .label{
-    display:inline-block; min-width:1.6em;
-    font-weight:700; color:var(--muted)
-  }
-
-  .feedback{
-    margin-top:10px; font-size:15px;
-    padding:10px 12px; border-left:4px solid var(--border); color:var(--muted);
-    white-space:pre-wrap;
-  }
-  .feedback.ok{border-left-color:var(--ok); color:var(--ok)}
-  .feedback.ng{border-left-color:var(--ng); color:var(--ng)}
-
-  .notes{color:var(--muted); font-size:12px; margin-top:12px}
+  .opt.correct{border-color:rgba(46,125,50,.4);background:rgba(76,175,80,.06)}
+  .opt.wrong{border-color:rgba(211,47,47,.4);background:rgba(244,67,54,.06)}
+  .opt .label{display:inline-block;min-width:1.6em;font-weight:700;color:var(--muted)}
+  .feedback{margin-top:10px;font-size:15px;padding:10px 12px;border-left:4px solid var(--border);color:var(--muted);white-space:pre-wrap}
+  .feedback.ok{border-left-color:var(--ok);color:var(--ok)}
+  .feedback.ng{border-left-color:var(--ng);color:var(--ng)}
+  .notes{color:var(--muted);font-size:12px;margin-top:12px}
   .notes li{margin:4px 0}
-
-  /* bottom fixed bar (safe-area 対応) */
-  .bottom{
-    position:fixed; left:0; right:0; bottom:0; z-index:10;
-    background:#fff; border-top:1px solid var(--border);
-    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-    display:flex; gap:12px; justify-content:center;
-  }
-  .btn{
-    flex:1 1 0; max-width:520px;
-    padding:14px 10px; border-radius:12px;
-    border:none; font-weight:700; font-size:16px; cursor:pointer;
-    color:#fff;
-  }
-  .btn-primary{background:var(--brand)}
-  .btn-primary:active{background:var(--brand-600)}
-  .btn-danger{background:var(--ng)}
-  .btn-danger:active{background:#b71c1c}
-
-  /* 小さめ端末でも余白を保つ */
-  @media (min-width:1200px){ .wrap{margin-top:28px} }
+  .bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#fff;border-top:1px solid var(--border);
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:12px;justify-content:center}
+  .btn{flex:1 1 0;max-width:520px;padding:14px 10px;border-radius:12px;border:none;font-weight:700;font-size:16px;cursor:pointer;color:#fff}
+  .btn-primary{background:var(--brand)} .btn-primary:active{background:var(--brand-600)}
+  .btn-danger{background:var(--ng)} .btn-danger:active{background:#b71c1c}
 </style>
 </head>
 <body>
@@ -114,12 +48,13 @@
     <div class="card" id="card">
       <div class="meta" id="meta">No.- / 年度 -</div>
       <div class="qtext" id="qtext">読み込み中…</div>
+      <img id="qimg" class="qimg" hidden alt="問題画像" />
       <div id="options"></div>
       <div class="feedback" id="feedback" hidden></div>
 
       <ul class="notes">
-        <li>出題はランダム / 正解した問題はリセットまで再出題しません。</li>
-        <li>各選択肢をタップで即判定。不正解時は「正解は a/b/c/d」+ 解説を表示します。</li>
+        <li>出題はランダム / 正解した問題は「リセット」まで再出題しません。</li>
+        <li>タップで即判定。不正解時は「正解は a/b/c/d」+ 解説を表示します。</li>
         <li>出題数は無制限です。</li>
       </ul>
     </div>
@@ -135,19 +70,16 @@
   const CSV_PATH = 'mondai4-1.csv'; // リポジトリ直下
   const answeredCorrectIds = new Set();
   let allItems = [];
-  let current = null; // {id, year, number, question, options:[{text,isCorrect}], explanation}
+  let current = null;
 
   const labelOf = i => ['a','b','c','d','e','f','g','h'][i] || String(i+1);
 
-  // --- CSV 読み込み → パース ---
   init();
+
   async function init(){
     try{
-      const res = await fetch(CSV_PATH, {cache:'no-store'});
-      if(!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
-      // UTF-8前提。Shift_JIS の場合はリポジトリ側で UTF-8 に保存してください。
-      const text = await res.text();
-      const rows = parseCSV(text);
+      const text = await fetchCsvWithAutoEncoding(CSV_PATH);
+      const rows = robustCsvParse(text); // [{...}]
       allItems = rows.map((r, idx) => normalizeRecord(r, idx)).filter(Boolean);
       nextQuestion();
     }catch(e){
@@ -156,135 +88,196 @@
     }
   }
 
-  // 簡易CSVパーサ（カンマ区切り / ダブルクオート対応）
-  function parseCSV(src){
-    const out = [];
-    let i=0, cur='', row=[], inQ=false;
-    const pushCell=()=>{ row.push(cur); cur=''; };
-    const pushRow=()=>{ if(row.length) out.push(row), row=[]; };
+  // ===== エンコーディング自動判定：UTF-8 → ダメなら Shift_JIS =====
+  async function fetchCsvWithAutoEncoding(path){
+    const res = await fetch(path, {cache:'no-store'});
+    if(!res.ok) throw new Error(`CSV fetch failed: ${res.status}`);
+    const buf = await res.arrayBuffer();
 
-    // 正規化（改行）
+    const decUtf8 = new TextDecoder('utf-8', {fatal:false});
+    let textUtf8 = decUtf8.decode(buf);
+    const badUtf8 = (textUtf8.match(/\uFFFD/g) || []).length;
+
+    // Shift_JIS で再デコードして「�」が減るなら採用
+    let textSjis = '';
+    try {
+      const decSjis = new TextDecoder('shift_jis', {fatal:false});
+      textSjis = decSjis.decode(buf);
+    } catch(_) {}
+
+    const badSjis = textSjis ? (textSjis.match(/\uFFFD/g) || []).length : Infinity;
+
+    if (badSjis < badUtf8) return textSjis;
+    return textUtf8;
+  }
+
+  // ===== CSVパース（引用符・改行対応） + ヘッダー名ゆらぎ吸収 =====
+  function robustCsvParse(src){
     src = src.replace(/\r\n?/g, '\n');
-    const N = src.length;
+    if(!src.trim()) return [];
+    // 先頭行（ヘッダー）
+    let p = 0, inQ = false, header = '';
+    while(p < src.length){
+      const ch = src[p++];
+      if(ch === '"'){ inQ = !inQ; header += ch; }
+      else if(ch === '\n' && !inQ) break;
+      else header += ch;
+    }
+    const headerCells = splitCsvLine(header);
+    const canon = s => s.toLowerCase().replace(/^\uFEFF/,'').replace(/[^a-z0-9_]/g,'');
+    const wanted = {
+      year:['year'],
+      yearDisplay:['yeardisplay','yeardisp','yeardsp'],
+      number:['number','no'],
+      question:['question','q','problem'],
+      image_placeholder:['image_placeholder','image','img','imgplaceholder'],
+      choices:['choices','options','opts'],
+      correct:['correct','answer','ans'],
+      explanation:['explanation','exp','comment','note']
+    };
+    const hmap = {};
+    headerCells.forEach((h,i)=>{
+      const c = canon(h);
+      hmap[i] = c;
+    });
 
-    // ヘッダー抽出
-    let lineEnd = src.indexOf('\n');
-    if(lineEnd === -1) lineEnd = N;
-    const headerLine = src.slice(0, lineEnd).trim();
-    const headers = headerLine.split(',').map(h => h.trim());
-    const body = src.slice(lineEnd+1);
-
-    // 本文を行単位に（クォート内改行あり得るので手で読む）
-    const rowsRaw = [];
-    cur=''; inQ=false;
-    for(let j=0;j<body.length;j++){
-      const ch = body[j];
+    // 本文を行単位で切り出し
+    const lines = [];
+    let cur = '', q = false;
+    for(; p < src.length; p++){
+      const ch = src[p];
       if(ch === '"'){
-        if(inQ && body[j+1] === '"'){ cur+='"'; j++; }
-        else inQ = !inQ;
-      }else if(ch === '\n' && !inQ){
-        rowsRaw.push(cur); cur='';
+        q = !q; cur += ch;
+      }else if(ch === '\n' && !q){
+        lines.push(cur); cur = '';
       }else{
         cur += ch;
       }
     }
-    if(cur) rowsRaw.push(cur);
+    if(cur) lines.push(cur);
 
-    // 各行をセル分割
-    const table = rowsRaw.map(line=>{
-      const cells=[]; let c='', q=false;
-      for(let k=0;k<line.length;k++){
-        const ch=line[k];
-        if(ch === '"'){
-          if(q && line[k+1] === '"'){ c+='"'; k++; }
-          else q = !q;
-        }else if(ch === ',' && !q){
-          cells.push(c); c='';
-        }else{
-          c+=ch;
+    const records = lines.map(line => {
+      const cells = splitCsvLine(line);
+      const obj = {};
+      cells.forEach((val, idx) => {
+        obj[hmap[idx] || ('col'+idx)] = val;
+      });
+      // 正規キーに寄せる
+      const out = {};
+      for(const key in wanted){
+        for(const alias of wanted[key]){
+          const hit = Object.keys(obj).find(k => k===alias);
+          if(hit){ out[key] = obj[hit]; break; }
         }
+        if(out[key] == null) out[key] = '';
       }
-      cells.push(c);
-      return Object.fromEntries(headers.map((h,idx)=>[h, (cells[idx]??'').trim()]));
+      return out;
     });
-
-    return table;
+    return records;
   }
 
-  // レコード正規化
-  function normalizeRecord(r, idx){
-    // 必須フィールド
-    const qText = (r.question || '').trim();
-    const choicesRaw = (r.choices || '').trim();
-    const explanation = (r.explanation || '').trim();
-    if(!qText || !choicesRaw) return null;
+  // 1行のセル分割（"で囲まれた中の , と "" を扱う）
+  function splitCsvLine(line){
+    const cells = []; let c = '', q = false;
+    for(let i=0;i<line.length;i++){
+      const ch = line[i];
+      if(ch === '"'){
+        if(q && line[i+1] === '"'){ c+='"'; i++; }
+        else q = !q;
+      }else if(ch === ',' && !q){
+        cells.push(c); c='';
+      }else{
+        c += ch;
+      }
+    }
+    cells.push(c);
+    // 外側の引用符を剥がす
+    return cells.map(s=>{
+      s = s.trim();
+      if(s.startsWith('"') && s.endsWith('"')) s = s.slice(1,-1).replace(/""/g,'"');
+      return s;
+    });
+  }
 
-    // choices は JSON 配列を想定
+  // ===== レコード正規化 =====
+  function normalizeRecord(r, idx){
+    const qText = (r.question || '').trim();
+    if(!qText) return null;
+
+    const explanation = (r.explanation || '').trim();
+    const imgRaw = (r.image_placeholder || '').trim();
+
+    // 選択肢
+    let choicesRaw = (r.choices || '').trim();
     let choices;
     try{
       choices = JSON.parse(choicesRaw);
       if(!Array.isArray(choices)) throw 0;
     }catch{
-      // セミコロン等で区切られていた場合の救済
+      // セミコロン / パイプ / 全角パイプなどの区切りも許容
       choices = choicesRaw.split(/\s*[;｜|]\s*/);
     }
     choices = choices.filter(s => String(s).trim().length>0).slice(0,8);
 
-    // correct 正規化（a/b/c/d・A/B/C/D・0/1/2/3・1/2/3/4・全角にも対応）
+    // 正解
     const ci = normalizeCorrect(r.correct, choices.length);
 
-    // 表示テキスト整形（先頭の「a.」「ａ．」などを剥がす）
+    // 表示テキスト整形（先頭の「a.」「ａ．」等を除去）
     const strip = s => String(s).replace(/^\s*[a-hａ-ｈＡ-Ｈ]\s*[\.．、)）]\s*/i,'').trim();
 
-    // 正解フラグ付きオプションを作成
+    // isCorrect を付与してからシャッフル
     let options = choices.map((t,i)=>({ text: strip(t), isCorrect: i===ci }));
-    // シャッフル（←ここが今回のポイント。isCorrect を保持したまま並び替える）
     options = shuffle(options);
 
+    // 画像：Base64/データURL/拡張子なしBase64 に対応
+    let imgSrc = '';
+    if (imgRaw) {
+      if (/^data:image\//i.test(imgRaw)) imgSrc = imgRaw;
+      else if (/^[A-Za-z0-9+/=]{100,}$/.test(imgRaw)) imgSrc = 'data:image/png;base64,' + imgRaw;
+      else if (/^https?:\/\//i.test(imgRaw)) imgSrc = imgRaw;
+    }
+
     return {
-      id: (r.year||'') + '-' + (r.number||idx),
+      id: (r.year || '') + '-' + (r.number || idx),
       year: String(r.yearDisplay || r.year || '').trim(),
       number: String(r.number || '').trim(),
       question: qText,
       options,
-      explanation
+      explanation,
+      image: imgSrc
     };
   }
 
   function normalizeCorrect(v, len){
     if(v==null) return 0;
     let s = String(v).trim();
-    // 全角小文字を半角化
     s = s.replace(/[ａ-ｚＡ-Ｚ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
     s = s.replace(/[０-９]/g, d => String.fromCharCode(d.charCodeAt(0) - 0xFEE0));
-    // a/b/c/d
     const m = s.match(/^[a-h]/i);
-    if(m){ return m[0].toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0); }
-    // 1〜
+    if(m) return m[0].toLowerCase().charCodeAt(0) - 97;
     if(/^\d+$/.test(s)){
       const n = parseInt(s,10);
       if(n>=1 && n<=len) return n-1;
       if(n>=0 && n<len)   return n;
     }
-    // フォールバック
     return 0;
   }
 
   function shuffle(arr){
     const a = arr.slice();
     for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
+      const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
     }
     return a;
   }
 
-  // --- 出題 ---
+  // ===== 出題・描画 =====
   function nextQuestion(){
     const pool = allItems.filter(q => !answeredCorrectIds.has(q.id));
     if(pool.length === 0){
       showText('全ての問題に正解しました！「リセット」で再開できます。');
       renderMeta('-', '-');
+      document.getElementById('qimg').hidden = true;
       return;
     }
     current = pool[Math.floor(Math.random()*pool.length)];
@@ -294,6 +287,13 @@
   function renderQuestion(q){
     renderMeta(q.number || '-', q.year || '-');
     document.getElementById('qtext').textContent = q.question;
+
+    const imgEl = document.getElementById('qimg');
+    if(q.image){
+      imgEl.src = q.image; imgEl.hidden = false;
+    }else{
+      imgEl.hidden = true;
+    }
 
     const box = document.getElementById('options');
     box.innerHTML = '';
@@ -317,7 +317,6 @@
     const correctIdx = q.options.findIndex(o => o.isCorrect);
     const feedback = document.getElementById('feedback');
 
-    // 見た目
     optsEl.forEach((el,i)=>{
       el.disabled = true;
       if(i===correctIdx) el.classList.add('correct');
@@ -328,7 +327,6 @@
       feedback.className = 'feedback ok';
       feedback.hidden = false;
       feedback.textContent = '正解！';
-      // 正解済みとして記録（リセットまで出さない）
       answeredCorrectIds.add(q.id);
     }else{
       feedback.className = 'feedback ng';
@@ -346,15 +344,13 @@
   }
 
   function escapeHtml(s){
-    return String(s)
-      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
   }
 
-  // --- UI ボタン ---
+  // ===== UI =====
   document.getElementById('nextBtn').addEventListener('click', nextQuestion);
   document.getElementById('resetBtn').addEventListener('click', () => {
-    answeredCorrectIds.clear();
-    nextQuestion();
+    answeredCorrectIds.clear(); nextQuestion();
   });
 
 })();
