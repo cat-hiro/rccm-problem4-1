@@ -26,12 +26,12 @@
     .question{font-size:clamp(16px,3.8vw,20px);line-height:1.7;margin:8px 0 12px}
 
     .imgwrap{display:flex;justify-content:center;margin:10px 0}
-    .imgwrap[hidden]{display:none !important;} /* ← 隠すときは完全に消す */
+    .imgwrap[hidden]{display:none !important;} /* 隠すときは完全に消す */
     .imgwrap img{
       max-width:100%;
-      max-height:68vh;   /* 画面の約2/3に収める */
+      max-height:68vh;
       height:auto;
-      object-fit:contain; /* はみ出さず全体表示 */
+      object-fit:contain; /* 全体を収める */
       display:none;       /* 読み込み成功時に block にする */
       border-radius:12px;
       border:1px solid var(--border);
@@ -97,7 +97,7 @@
     </footer>
   </div>
 
-  <!-- データチャンク（問題データ本体を4分割で読み込み） -->
+  <!-- データチャンク -->
   <script src="problems_chunk1_of4.js"></script>
   <script src="problems_chunk2_of4.js"></script>
   <script src="problems_chunk3_of4.js"></script>
@@ -122,30 +122,51 @@
       const STORAGE_KEY = 'rccm_q_correct_ids_v1';
       const LETTERS = ['a','b','c','d','e','f'];
 
-      // 画像ソースを正規化（空/不正は '' に）
+      /* ========== 画像データの正規化 ========== */
       function sanitizeImageSrc(raw){
         if(raw == null) return '';
         const s0 = String(raw).trim();
         if(!s0 || s0 === 'null' || s0 === 'undefined' || s0 === 'NaN') return '';
 
-        // data URI? data:image/<token>;base64,<payload>
+        // data:image/<token>;base64,<payload>
         const m = s0.match(/^data:image\/([^;]+);base64,([\s\S]+)$/);
         if(m){
-          const token = m[1].toLowerCase();              // 例: "jpeg", "png", "page2_img2.png" など
-          let payload = (m[2] || '').replace(/\s+/g,''); // 改行・空白を除去（iOS対策）
-          if(payload.length < 64) return '';             // やたら短いのは壊れているとみなす
+          const token = m[1].toLowerCase();        // 例: "page2_img3.jpeg", "png", "jpeg"
+          let payload = (m[2] || '');
 
+          // 改行・空白を完全除去
+          payload = payload.replace(/\s+/g, '');
+
+          // Base64長を4の倍数にパディング（iOSでのデコード安定化）
+          const mod = payload.length % 4;
+          if(mod !== 0){
+            payload = payload.padEnd(payload.length + (4 - mod), '=');
+          }
+
+          // MIME推定
           let mime = 'image/png';
           if(token.includes('jpg') || token.includes('jpeg')) mime = 'image/jpeg';
           else if(token.includes('png')) mime = 'image/png';
           else if(token.includes('gif')) mime = 'image/gif';
-          // それ以外は png 扱い
+
+          // 極端に短いデータは破棄
+          if(payload.length < 64) return '';
 
           return `data:${mime};base64,${payload}`;
         }
 
-        // 通常URL/相対パスはそのまま
+        // ふつうのURL/相対パスはそのまま
         return s0;
+      }
+
+      // 画像をプレロードして、成功時のみ img に反映
+      function loadImage(src){
+        return new Promise((resolve,reject)=>{
+          const im = new Image();
+          im.onload = ()=>resolve(true);
+          im.onerror = ()=>reject(new Error('image load error'));
+          im.src = src;
+        });
       }
 
       function loadProblems(){
@@ -155,7 +176,6 @@
             if(Array.isArray(chunk)) list.push(...chunk);
           }
         }
-        // 正規化
         list = list.map(n=>({
           id: String(n.id ?? `${n.year}-${n.number}`),
           year: Number(n.year ?? 0),
@@ -172,7 +192,6 @@
 
       let ALL = loadProblems();
       let correctSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'));
-
       function saveCorrect(){ localStorage.setItem(STORAGE_KEY, JSON.stringify([...correctSet])); }
 
       function pickRandom(){
@@ -184,7 +203,7 @@
 
       let current = null;
 
-      function render(q){
+      async function render(q){
         if(!q){
           qEl.textContent = '出題可能な問題がありません。リセットしてください。';
           metaEl.textContent = '';
@@ -195,20 +214,26 @@
         metaEl.textContent = `${q.yearDisplay} / No.${q.number}`;
         qEl.textContent = q.question;
 
-        // 画像：毎回確実に初期化 → 正規化して設定 → 成否で表示切替
+        // 画像：まず完全に隠す
         imgWrap.hidden = true;
         imgEl.style.display = 'none';
-        imgEl.onload = ()=>{ imgEl.style.display='block'; imgWrap.hidden=false; };
-        imgEl.onerror = ()=>{
-          imgEl.removeAttribute('src');
-          imgEl.style.display = 'none';
-          imgWrap.hidden = true;
-        };
+        imgEl.removeAttribute('src');
 
         const src = sanitizeImageSrc(q.image);
         if(src){
-          imgEl.src = src;
+          try{
+            await loadImage(src);        // 成功したらだけ表示
+            imgEl.src = src;
+            imgEl.style.display = 'block';
+            imgWrap.hidden = false;
+          }catch{
+            // 失敗時は何も出さない（白い四角/丸を消す）
+            imgEl.removeAttribute('src');
+            imgEl.style.display = 'none';
+            imgWrap.hidden = true;
+          }
         }else{
+          // 画像なし
           imgEl.removeAttribute('src');
           imgEl.style.display = 'none';
           imgWrap.hidden = true;
