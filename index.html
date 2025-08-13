@@ -105,18 +105,23 @@
     </footer>
   </div>
 
-  <!-- データ（どちらでもOK） -->
+  <!-- データ（inline JSON は互換のために残置） -->
   <script type="application/json" id="problems-data">[]</script>
-  <script>
-    // 既存の構成を踏襲：外部チャンクから push される
-    window.PROBLEMS_CHUNKS = window.PROBLEMS_CHUNKS || [];
-  </script>
 
+  <!-- 先にグローバル配列を用意（どのチャンクでも push できるように） -->
+  <script>window.PROBLEMS_CHUNKS = window.PROBLEMS_CHUNKS || []; var PROBLEMS_CHUNKS = window.PROBLEMS_CHUNKS;</script>
+
+  <!-- 既存の問題データ（4ファイル） -->
+  <script src="problems_chunk1_of4.js"></script>
+  <script src="problems_chunk2_of4.js"></script>
+  <script src="problems_chunk3_of4.js"></script>
+  <script src="problems_chunk4_of4.js"></script>
+
+  <!-- アプリ本体 -->
   <script>
   (function(){
     const $ = s => document.querySelector(s);
 
-    // UI要素
     const cardEl = $('#card'), loadingEl = $('#loading');
     const metaEl = $('#meta'), metaREl = $('#metaR'), qEl = $('#q');
     const imgWrap = $('#imgwrap'), imgEl = $('#qimg');
@@ -124,24 +129,29 @@
     const prevBtn = $('#prevBtn'), nextBtn = $('#nextBtn'), resetBtn = $('#resetBtn');
     const yearFilter = $('#yearFilter'), counterEl = $('#counter'), rateEl = $('#rate');
 
-    // ストレージ
-    const STORAGE_CORRECT = 'rccm_q_correct_ids_v1'; // 既存を継承
+    const STORAGE_CORRECT = 'rccm_q_correct_ids_v1';
     const STORAGE_ORDER   = 'rccm41_order_v1';
     const STORAGE_INDEX   = 'rccm41_index_v1';
-    let correctSet = new Set(JSON.parse(localStorage.getItem(STORAGE_CORRECT)||'[]'));
 
-    // データ読込
+    let correctSet = new Set(JSON.parse(localStorage.getItem(STORAGE_CORRECT)||'[]'));
+    let ALL = [];  // initで読み込む
+
     function loadProblems(){
       let list = [];
-      try {
-        const txt = ($('#problems-data')?.textContent||'').trim();
+      // A: inline JSON
+      try{
+        const slot = document.querySelector('#problems-data');
+        const txt = (slot?.textContent||'').trim();
         if(txt && txt !== '[]') list = JSON.parse(txt);
-      } catch(e){}
-      if(Array.isArray(window.PROBLEMS_CHUNKS)){
-        for(const chunk of window.PROBLEMS_CHUNKS){
-          if(Array.isArray(chunk)) list.push(...chunk);
-        }
+      }catch(e){}
+
+      // B: CHUNKS（window とグローバルの両方から回収）
+      const chunksWin = (Array.isArray(window.PROBLEMS_CHUNKS) ? window.PROBLEMS_CHUNKS : []);
+      const chunksGbl = (typeof PROBLEMS_CHUNKS !== 'undefined' && Array.isArray(PROBLEMS_CHUNKS)) ? PROBLEMS_CHUNKS : [];
+      for(const chunk of [...chunksWin, ...chunksGbl]){
+        if(Array.isArray(chunk)) list.push(...chunk);
       }
+
       // 正規化
       list = list.map(n=>({
         id: String(n.id ?? `${n.year}-${n.number}`),
@@ -156,9 +166,7 @@
       })).filter(n=>n.choices.length>0);
       return list;
     }
-    let ALL = loadProblems();
 
-    // 年度一覧
     function buildYearOptions(){
       const ys = Array.from(new Set(ALL.map(x=>x.year))).sort((a,b)=>a-b);
       const map = new Map(ALL.map(x=>[x.year, x.yearDisplay]));
@@ -174,12 +182,10 @@
       yearFilter.value = localStorage.getItem('rccm41_year')||'';
       yearFilter.addEventListener('change', ()=>{
         localStorage.setItem('rccm41_year', yearFilter.value);
-        makeOrder(true);
-        showAt(0);
+        makeOrder(true); showAt(0);
       });
     }
 
-    // フィルタされた問題（正解済みは除外）
     function filteredPool(){
       const y = yearFilter.value;
       let pool = ALL.filter(q=>!correctSet.has(q.id));
@@ -187,14 +193,12 @@
       return pool;
     }
 
-    // ランダム順（正解済み除外）を作成
     function shuffle(a){
-      for(let i=a.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
-      }
+      for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
       return a;
     }
-    let ORDER = []; // id配列
+
+    let ORDER = [];
     let IDX = 0;
 
     function makeOrder(save){
@@ -221,8 +225,6 @@
       }catch(e){ makeOrder(true); }
     }
 
-    // 表示ロジック
-    let current = null;
     function normalizeDataUri(src){
       if(!src) return '';
       if(src.startsWith('data:image/page')){
@@ -231,6 +233,8 @@
       }
       return src;
     }
+
+    let current = null;
     function render(q){
       if(!q){
         qEl.textContent='出題可能な問題がありません。リセットしてください。';
@@ -243,7 +247,6 @@
       metaREl.textContent = `ID: ${q.id}`;
       qEl.textContent = q.question;
 
-      // 画像
       const src = normalizeDataUri(q.image||'').trim();
       if(src){
         imgEl.onerror = ()=>{ imgEl.removeAttribute('src'); imgWrap.style.display='none'; };
@@ -252,15 +255,12 @@
         imgEl.removeAttribute('src'); imgWrap.style.display='none';
       }
 
-      // 選択肢
       choicesEl.innerHTML='';
       resultEl.textContent=''; resultEl.className='result';
       explainEl.textContent='';
 
       q.choices.forEach((tx,i)=>{
-        const div = document.createElement('div');
-        div.className='choice';
-        div.dataset.index = i;
+        const div = document.createElement('div'); div.className='choice'; div.dataset.index = i;
         const b = document.createElement('div'); b.className='bullet'; b.textContent = ['a','b','c','d','e','f'][i]||String(i+1);
         const t = document.createElement('div'); t.className='ctext'; t.textContent = tx;
         div.appendChild(b); div.appendChild(t);
@@ -272,9 +272,7 @@
     }
 
     function lockChoices(){
-      choicesEl.querySelectorAll('.choice').forEach(el=>{
-        el.classList.add('disabled'); el.style.pointerEvents='none';
-      });
+      choicesEl.querySelectorAll('.choice').forEach(el=>{ el.classList.add('disabled'); el.style.pointerEvents='none'; });
     }
 
     function onChoose(i){
@@ -285,7 +283,6 @@
         resultEl.textContent='正解！'; resultEl.className='result ok';
         correctSet.add(current.id);
         localStorage.setItem(STORAGE_CORRECT, JSON.stringify([...correctSet]));
-        // 現在の問題をORDERから除去
         const pos = ORDER.indexOf(current.id);
         if(pos>=0){ ORDER.splice(pos,1); if(IDX>=ORDER.length) IDX=Math.max(ORDER.length-1,0); }
         localStorage.setItem(STORAGE_ORDER, JSON.stringify(ORDER));
@@ -297,12 +294,8 @@
       updateKPI();
     }
 
-    function currentPoolCount(){ return filteredPool().length; }
-
     function showAt(i){
-      if(!ORDER.length){
-        render(null); updateKPI(); return;
-      }
+      if(!ORDER.length){ render(null); updateKPI(); return; }
       IDX = Math.min(Math.max(i,0), ORDER.length-1);
       const id = ORDER[IDX];
       current = ALL.find(x=>x.id===id) || null;
@@ -317,8 +310,7 @@
       if(confirm('正解済みの記録をリセットしますか？')){
         correctSet.clear();
         localStorage.setItem(STORAGE_CORRECT,'[]');
-        makeOrder(true);
-        showAt(0);
+        makeOrder(true); showAt(0);
       }
     }
 
@@ -327,39 +319,30 @@
       const solved = correctSet.size;
       const rate = totalAll? Math.round(solved/totalAll*100):0;
       rateEl.textContent = `${rate}%`;
-
       const poolN = ORDER.length;
       counterEl.textContent = `${Math.min(IDX+1, Math.max(poolN,1))} / ${Math.max(poolN,1)}`;
-
-      // 前後ボタン有効化
       prevBtn.disabled = (IDX<=0);
       nextBtn.disabled = (IDX>=ORDER.length-1);
     }
 
-    // イベント
     prevBtn.addEventListener('click', prev);
     nextBtn.addEventListener('click', next);
     resetBtn.addEventListener('click', resetProgress);
 
     function init(){
+      ALL = loadProblems();
       if(!ALL || !ALL.length){
         loadingEl.textContent='データが未設定です。problems_chunk*.js を読み込んでください。';
         return;
       }
       buildYearOptions();
-      restoreOrder();
+      makeOrder(true);
       loadingEl.hidden=true; cardEl.hidden=false;
-      showAt(IDX);
+      showAt(0);
     }
-    window.addEventListener('load', init);
+
+    window.addEventListener('DOMContentLoaded', init);
   })();
   </script>
-
-  <!-- 既存の問題データを読み込む（いつもの4ファイル） -->
-  <script src="problems_chunk1_of4.js"></script>
-  <script src="problems_chunk2_of4.js"></script>
-  <script src="problems_chunk3_of4.js"></script>
-  <script src="problems_chunk4_of4.js"></script>
 </body>
 </html>
-
