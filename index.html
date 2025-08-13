@@ -11,13 +11,14 @@
       --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.08);
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
+    html,body{padding-bottom:calc(76px + env(safe-area-inset-bottom)); height:100%}
+    body{padding-bottom:calc(76px + env(safe-area-inset-bottom)); 
       margin:0; background:linear-gradient(180deg,#f6f9ff,#eef4ff 40%,#f6f9ff);
       color:var(--ink); font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
-      overflow:hidden;
+      /* ページ自体をスクロール可能にする */
+      overflow:auto;
     }
-    .wrap{height:100dvh; display:flex; flex-direction:column}
+    .wrap{min-height:100vh; display:flex; flex-direction:column}
     header{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.7); backdrop-filter:blur(6px); border-bottom:1px solid var(--line)}
     .container{max-width:960px; margin:0 auto; padding:12px 16px}
     .row{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
@@ -27,16 +28,20 @@
     select,button{appearance:none; border-radius:12px; border:1px solid var(--line); background:#fff; color:var(--ink); padding:10px 12px; font-weight:600}
     select{padding-right:28px}
 
-    main{flex:1; min-height:0; }
-    .inner{max-width:960px; margin:14px auto; padding:0 16px; height:calc(100% - 28px)}
-    .card{height:100%; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px; display:flex; flex-direction:column; gap:10px}
+    main{flex:1;}
+    .inner{max-width:960px; margin:14px auto; padding:0 16px;}
+    /* カードは高さ固定をやめ、内容に応じて伸び縮み（ページ全体でスクロール） */
+    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px; display:flex; flex-direction:column; gap:10px}
     .meta{display:flex; align-items:center; justify-content:space-between; color:var(--muted)}
-    .qwrap{display:flex; gap:12px; min-height:0}
-    .qleft{flex:1; min-width:0; display:flex; flex-direction:column; gap:10px}
-    .qtext{max-height:140px; overflow:auto; padding:10px; border:1px solid var(--line); border-radius:12px; background:#fafcff}
-    .imgbox{flex:0 0 auto; display:none; justify-content:center}
-    .imgbox img{max-width:100%; max-height:40vh; height:auto; border:1px solid var(--line); border-radius:12px; background:#fff}
-    .choices{display:flex; flex-direction:column; gap:10px; overflow:auto}
+    .qwrap{display:flex; gap:12px}
+    .qleft{flex:1; min-width:0; display:flex; flex-direction:column; gap:12px}
+    /* 設問ボックス：高さ制限を外し読みやすく */
+    .qtext{padding:10px; border:1px solid var(--line); border-radius:12px; background:#fafcff; line-height:1.7}
+    /* 画像：iPhone で大き過ぎないように上限を設定。タップで拡大可 */
+    .imgbox{display:none; justify-content:center}
+    .imgbox img{max-width:100%; height:auto; max-height:min(42vh,560px); border:1px solid var(--line); border-radius:12px; background:#fff; object-fit:contain}
+    /* 選択肢 */
+    .choices{display:flex; flex-direction:column; gap:10px}
     .choice{display:flex; gap:10px; align-items:flex-start; border:1px solid var(--line); border-radius:12px; padding:12px; background:#f8fbff; cursor:pointer}
     .choice:hover{outline:2px solid rgba(37,99,235,.15)}
     .choice.disabled{opacity:.7; cursor:default}
@@ -45,17 +50,25 @@
     .result{font-weight:700}
     .result.ok{color:var(--ok)}
     .result.bad{color:var(--bad)}
-    .explain{color:var(--muted); border-top:1px dashed var(--line); padding-top:8px}
+    /* 解説は折りたたみ（長文も切れずに表示）、等幅整形 */
+    .explain details{border-top:1px dashed var(--line); padding-top:8px}
+    .explain summary{cursor:pointer; list-style:none; font-weight:700; color:#1f4ed8}
+    .explain summary::-webkit-details-marker{display:none}
+    .exbody{padding-bottom:calc(76px + env(safe-area-inset-bottom)); white-space:pre-wrap; color:var(--muted); margin-top:8px; line-height:1.7}
 
-    footer{position:sticky; bottom:0; z-index:50; background:rgba(255,255,255,.7); backdrop-filter:blur(6px); border-top:1px solid var(--line)}
+    footer{position:fixed; left:0; right:0; bottom:0; z-index:50; background:rgba(255,255,255,.85); backdrop-filter:blur(6px); border-top:1px solid var(--line)}
     .bar{max-width:960px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; gap:10px}
     .spacer{flex:1}
     .btn-primary{background:linear-gradient(180deg,#3b82f6,#2563eb); color:#fff; border-color:#2563eb}
     .btn-ghost{background:#fff}
     .btn-danger{border-color:#fecaca; background:#fff0f0; color:#b91c1c}
 
+    /* 画像全画面ビューワ */
+    #imgModal{position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:100}
+    #imgModal img{max-width:96vw; max-height:92vh; background:#fff; border-radius:12px}
+
     @media (max-width:430px){
-      .qtext{max-height:120px}
+      .qtext{font-size:16px}
     }
   </style>
 </head>
@@ -105,6 +118,9 @@
     </footer>
   </div>
 
+  <!-- フルスクリーン画像モーダル -->
+  <div id="imgModal"><img alt=""></div>
+
   <!-- データ（inline JSON は互換のために残置） -->
   <script type="application/json" id="problems-data">[]</script>
 
@@ -125,13 +141,14 @@
     const cardEl = $('#card'), loadingEl = $('#loading');
     const metaEl = $('#meta'), metaREl = $('#metaR'), qEl = $('#q');
     const imgWrap = $('#imgwrap'), imgEl = $('#qimg');
+    const imgModal = $('#imgModal'), imgModalImg = $('#imgModal img');
     const choicesEl = $('#choices'), resultEl = $('#result'), explainEl = $('#explain');
     const prevBtn = $('#prevBtn'), nextBtn = $('#nextBtn'), resetBtn = $('#resetBtn');
     const yearFilter = $('#yearFilter'), counterEl = $('#counter'), rateEl = $('#rate');
 
     const STORAGE_CORRECT = 'rccm_q_correct_ids_v1';
-    const STORAGE_ORDER   = 'rccm41_order_v1';
-    const STORAGE_INDEX   = 'rccm41_index_v1';
+    const STORAGE_ORDER   = 'rccm41_order_v2';
+    const STORAGE_INDEX   = 'rccm41_index_v2';
 
     let correctSet = new Set(JSON.parse(localStorage.getItem(STORAGE_CORRECT)||'[]'));
     let ALL = [];  // initで読み込む
@@ -212,19 +229,6 @@
       updateKPI();
     }
 
-    function restoreOrder(){
-      try{
-        const sOrder = localStorage.getItem(STORAGE_ORDER);
-        const sIndex = localStorage.getItem(STORAGE_INDEX);
-        if(sOrder){
-          const arr = JSON.parse(sOrder);
-          if(Array.isArray(arr)) ORDER = arr.filter(id=>!correctSet.has(id) && ALL.find(x=>x.id===id));
-        }
-        if(!ORDER.length) makeOrder(true);
-        IDX = Math.min(Math.max(parseInt(sIndex||'0',10)||0, 0), Math.max(ORDER.length-1,0));
-      }catch(e){ makeOrder(true); }
-    }
-
     function normalizeDataUri(src){
       if(!src) return '';
       if(src.startsWith('data:image/page')){
@@ -239,7 +243,7 @@
       if(!q){
         qEl.textContent='出題可能な問題がありません。リセットしてください。';
         imgWrap.style.display='none'; imgEl.removeAttribute('src');
-        choicesEl.innerHTML=''; resultEl.textContent=''; explainEl.textContent='';
+        choicesEl.innerHTML=''; resultEl.textContent=''; explainEl.innerHTML='';
         metaEl.textContent=''; metaREl.textContent='';
         return;
       }
@@ -255,9 +259,17 @@
         imgEl.removeAttribute('src'); imgWrap.style.display='none';
       }
 
+      // 画像タップで拡大
+      imgEl.onclick = ()=>{
+        if(!imgEl.src) return;
+        imgModalImg.src = imgEl.src;
+        imgModal.style.display='flex';
+      };
+      imgModal.onclick = ()=>{ imgModal.style.display='none'; imgModalImg.src=''; };
+
       choicesEl.innerHTML='';
       resultEl.textContent=''; resultEl.className='result';
-      explainEl.textContent='';
+      explainEl.innerHTML='';
 
       q.choices.forEach((tx,i)=>{
         const div = document.createElement('div'); div.className='choice'; div.dataset.index = i;
@@ -290,7 +302,15 @@
         const letter = ['a','b','c','d','e','f'][current.correct]||String(current.correct+1);
         resultEl.textContent = `不正解。正解は ${letter}`; resultEl.className='result bad';
       }
-      if(current.explanation) explainEl.textContent = current.explanation;
+      if(current.explanation){
+        const det = document.createElement('details');
+        const sum = document.createElement('summary'); sum.textContent='解説を表示';
+        const body = document.createElement('div'); body.className='exbody'; body.textContent=current.explanation;
+        det.appendChild(sum); det.appendChild(body);
+        explainEl.appendChild(det);
+        // 正解したら開いた状態にしておくと復習しやすい
+        if(ok) det.setAttribute('open','open');
+      }
       updateKPI();
     }
 
