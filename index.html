@@ -246,10 +246,6 @@
         qEl.textContent='出題可能な問題がありません。リセットしてください。';
         imgWrap.style.display='none'; imgEl.removeAttribute('src');
         choicesEl.innerHTML=''; resultEl.textContent=''; explainEl.innerHTML='';
-      if(q.explanation){
-        explainEl.innerHTML = '<div class="exhdr">解説</div><div class="exbody"></div>';
-        const eb = explainEl.querySelector('.exbody'); eb.textContent = q.explanation;
-      }
         metaEl.textContent=''; metaREl.textContent='';
         return;
       }
@@ -276,10 +272,6 @@
       choicesEl.innerHTML='';
       resultEl.textContent=''; resultEl.className='result';
       explainEl.innerHTML='';
-      if(q.explanation){
-        explainEl.innerHTML = '<div class="exhdr">解説</div><div class="exbody"></div>';
-        const eb = explainEl.querySelector('.exbody'); eb.textContent = q.explanation;
-      }
 
       q.choices.forEach((tx,i)=>{
         const div = document.createElement('div'); div.className='choice'; div.dataset.index = i;
@@ -312,7 +304,10 @@
         const letter = ['a','b','c','d','e','f'][current.correct]||String(current.correct+1);
         resultEl.textContent = `不正解。正解は ${letter}`; resultEl.className='result bad';
       }
-      // 解説は常時表示のため何もしない
+      if(current.explanation){
+        explainEl.innerHTML = '<div class="exhdr">解説</div><div class="exbody"></div>';
+        const eb = explainEl.querySelector('.exbody'); eb.textContent = current.explanation;
+      }
       updateKPI();
     }
 
