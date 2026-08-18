@@ -153,8 +153,28 @@
     .q-text {
       font-size: 1.05rem;
       font-weight: 500;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       white-space: pre-wrap;
+    }
+
+    /* 図・画像表示エリアのスタイル */
+    .q-image-container {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 12px;
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .q-image-container img {
+      max-width: 100%;
+      height: auto;
+      max-height: 380px;
+      border-radius: 4px;
+      object-fit: contain;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      background-color: #ffffff;
     }
 
     .options {
@@ -317,6 +337,10 @@
 
         <div id="q-text" class="q-text"></div>
 
+        <div id="q-image-container" class="q-image-container hidden">
+          <img id="q-image" src="" alt="問題の図">
+        </div>
+
         <div class="options">
           <button class="option-btn" data-choice="a"><strong style="min-width: 20px;">a.</strong> <span id="opt-a"></span></button>
           <button class="option-btn" data-choice="b"><strong style="min-width: 20px;">b.</strong> <span id="opt-b"></span></button>
@@ -348,10 +372,9 @@
       let allItems = [];
       let currentItems = [];
       let currentIndex = 0;
-      let userAnswers = {}; // { [itemId]: choice }
+      let userAnswers = {};
       let stats = { answered: 0, correct: 0 };
 
-      // DOM要素
       const loadingView = document.getElementById('loading-view');
       const quizView = document.getElementById('quiz-view');
       const emptyView = document.getElementById('empty-view');
@@ -364,6 +387,8 @@
       const qMultipleBadge = document.getElementById('q-multiple-badge');
       const qIdText = document.getElementById('q-id-text');
       const qText = document.getElementById('q-text');
+      const qImageContainer = document.getElementById('q-image-container');
+      const qImage = document.getElementById('q-image');
       const optA = document.getElementById('opt-a');
       const optB = document.getElementById('opt-b');
       const optC = document.getElementById('opt-c');
@@ -376,7 +401,6 @@
       const prevBtn = document.getElementById('prev-btn');
       const nextBtn = document.getElementById('next-btn');
 
-      // データロードの確認
       function init() {
         if (!window.RCCM_DATA4 || !Array.isArray(window.RCCM_DATA4.items)) {
           loadingView.textContent = "データの読み込みに失敗しました (rccm_data4.js が正しく配置されているか確認してください)。";
@@ -386,7 +410,6 @@
         filterItems();
       }
 
-      // フィルタリング（年度選択）
       function filterItems() {
         const selectedYear = yearSelect.value;
         if (selectedYear === 'ALL') {
@@ -411,7 +434,6 @@
         }
       }
 
-      // 成績の更新
       function updateStats() {
         let answeredCount = 0;
         let correctCount = 0;
@@ -434,7 +456,6 @@
         scoreText.textContent = `正解率: ${percentage}% (${correctCount}/${answeredCount})`;
       }
 
-      // 問題の描画
       function renderQuestion() {
         const item = currentItems[currentIndex];
         if (!item) return;
@@ -443,6 +464,15 @@
         qYearNo.textContent = `${item.era_year} 問${item.q_no}`;
         qIdText.textContent = item.id;
         qText.textContent = item.question;
+
+        // 図（画像）の表示制御
+        if (item.figure_image) {
+          qImage.src = item.figure_image;
+          qImageContainer.classList.remove('hidden');
+        } else {
+          qImage.src = "";
+          qImageContainer.classList.add('hidden');
+        }
 
         optA.textContent = item.option_a;
         optB.textContent = item.option_b;
@@ -456,7 +486,6 @@
           qMultipleBadge.classList.add('hidden');
         }
 
-        // ボタンと解説の初期化
         optionButtons.forEach(btn => {
           btn.className = 'option-btn';
           btn.disabled = false;
@@ -464,7 +493,6 @@
         explanationBox.classList.remove('show');
         notesBox.classList.add('hidden');
 
-        // すでに解答済みの場合
         const answeredChoice = userAnswers[item.id];
         if (answeredChoice) {
           showResult(item, answeredChoice);
@@ -474,7 +502,6 @@
         nextBtn.disabled = currentIndex === currentItems.length - 1;
       }
 
-      // 解答結果の表示処理
       function showResult(item, userChoice) {
         const correctList = item.correct.split('|');
         const isCorrect = correctList.includes(userChoice);
@@ -511,7 +538,6 @@
         explanationBox.classList.add('show');
       }
 
-      // 選択肢クリック時の処理
       optionButtons.forEach(btn => {
         btn.addEventListener('click', function () {
           const item = currentItems[currentIndex];
@@ -523,7 +549,6 @@
         });
       });
 
-      // ナビゲーション
       prevBtn.addEventListener('click', () => {
         if (currentIndex > 0) {
           currentIndex--;
@@ -538,10 +563,8 @@
         }
       });
 
-      // 年度切り替え
       yearSelect.addEventListener('change', filterItems);
 
-      // シャッフル
       shuffleBtn.addEventListener('click', () => {
         for (let i = currentItems.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -551,14 +574,12 @@
         renderQuestion();
       });
 
-      // リセット
       resetBtn.addEventListener('click', () => {
         userAnswers = {};
         updateStats();
         renderQuestion();
       });
 
-      // 起動
       window.addEventListener('DOMContentLoaded', init);
     })();
   </script>
