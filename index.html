@@ -99,6 +99,23 @@
       white-space: pre-wrap;
     }
 
+    .figure-container {
+      display: none;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .figure-container.active {
+      display: block;
+    }
+
+    .figure-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
     .options-list {
       display: flex;
       flex-direction: column;
@@ -242,6 +259,10 @@
 
       <div class="question-text" id="question-text">読み込み中...</div>
 
+      <div class="figure-container" id="figure-container">
+        <img id="figure-img" src="" alt="問題の図・表">
+      </div>
+
       <div class="options-list" id="options-container"></div>
 
       <div class="explanation-card" id="explanation-card">
@@ -262,18 +283,9 @@
     let currentIndex = 0;
     let answeredState = {};
 
-    function extractQuestions(raw) {
-      if (!raw) return [];
-      if (Array.isArray(raw)) return raw;
-      if (raw.questions && Array.isArray(raw.questions)) return raw.questions;
-      return [];
-    }
-
     window.onload = function() {
-      if (typeof rccm_data4_1 !== 'undefined') {
-        questions = extractQuestions(rccm_data4_1);
-      } else if (typeof rccm_data !== 'undefined') {
-        questions = extractQuestions(rccm_data);
+      if (typeof window.RCCM_DATA4 !== 'undefined' && window.RCCM_DATA4.items) {
+        questions = window.RCCM_DATA4.items;
       }
 
       if (questions && questions.length > 0) {
@@ -289,6 +301,16 @@
       document.getElementById('era-badge').innerText = q.era_year || '';
       document.getElementById('qno-badge').innerText = `問${q.q_no || (index + 1)}`;
       document.getElementById('question-text').innerText = q.question;
+
+      const figContainer = document.getElementById('figure-container');
+      const figImg = document.getElementById('figure-img');
+      if (q.figure_image) {
+        figImg.src = q.figure_image;
+        figContainer.classList.add('active');
+      } else {
+        figContainer.classList.remove('active');
+        figImg.src = '';
+      }
 
       const container = document.getElementById('options-container');
       container.innerHTML = '';
@@ -348,9 +370,18 @@
       const resTitle = document.getElementById('result-title');
       const expText = document.getElementById('explanation-text');
 
-      resTitle.innerText = isCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
-      resTitle.className = `result-title ${isCorrect ? 'correct' : 'wrong'}`;
+      // 複数正解のデータ（例: "b|c|d"）に対応
+      const isActuallyCorrect = q.correct.includes(selectedKey) || isCorrect;
+
+      resTitle.innerText = isActuallyCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
+      resTitle.className = `result-title ${isActuallyCorrect ? 'correct' : 'wrong'}`;
       expText.innerText = q.explanation || '解説はありません。';
+      
+      // 特記事項（notes）がある場合は追記
+      if (q.notes) {
+        expText.innerText += `\n\n【注記】${q.notes}`;
+      }
+
       expCard.classList.add('active');
     }
 
