@@ -277,7 +277,7 @@
     </footer>
   </div>
 
-  <script src="rccm_data4_1.js"></script>
+  <script src="rccm_data4.js"></script>
   <script>
     let questions = [];
     let currentIndex = 0;
@@ -335,11 +335,11 @@
 
         if (userChoice) {
           btn.disabled = true;
-          if (opt.key === q.correct) {
+          if (q.correct.includes(opt.key)) {
             btn.classList.add('highlight-correct');
           }
           if (opt.key === userChoice) {
-            btn.classList.add(userChoice === q.correct ? 'selected-correct' : 'selected-wrong');
+            btn.classList.add(q.correct.includes(userChoice) ? 'selected-correct' : 'selected-wrong');
           }
         }
 
@@ -347,7 +347,7 @@
       });
 
       if (userChoice) {
-        showExplanation(userChoice === q.correct, q);
+        showExplanation(q.correct.includes(userChoice), q, userChoice);
       }
 
       document.getElementById('prev-btn').disabled = (index === 0);
@@ -365,19 +365,15 @@
       renderQuestion(currentIndex);
     }
 
-    function showExplanation(isCorrect, q) {
+    function showExplanation(isActuallyCorrect, q, selectedKey) {
       const expCard = document.getElementById('explanation-card');
       const resTitle = document.getElementById('result-title');
       const expText = document.getElementById('explanation-text');
 
-      // 複数正解のデータ（例: "b|c|d"）に対応
-      const isActuallyCorrect = q.correct.includes(selectedKey) || isCorrect;
-
       resTitle.innerText = isActuallyCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
       resTitle.className = `result-title ${isActuallyCorrect ? 'correct' : 'wrong'}`;
       expText.innerText = q.explanation || '解説はありません。';
-      
-      // 特記事項（notes）がある場合は追記
+
       if (q.notes) {
         expText.innerText += `\n\n【注記】${q.notes}`;
       }
